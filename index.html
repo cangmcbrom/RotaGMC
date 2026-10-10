@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RotaGMC - Aksesuar Mağazası</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container header-top-inner">
+                <span>Ücretsiz kargo fırsatları için takipte kalın!</span>
+                <span>Yardım & Destek</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container header-main-inner">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <span class="material-icons-outlined">menu</span>
+                </button>
+                <a href="#" class="logo" onclick="navigate('home')">
+                    <span class="logo-rota">Rota</span><span class="logo-gmc">GMC</span>
+                </a>
+                <div class="search-bar" id="searchBar">
+                    <input type="text" id="searchInput" placeholder="Ürün ara..." autocomplete="off">
+                    <button class="search-btn" onclick="performSearch()">
+                        <span class="material-icons-outlined">search</span>
+                    </button>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+                <div class="header-actions">
+                    <button class="mobile-search-btn" id="mobileSearchBtn">
+                        <span class="material-icons-outlined">search</span>
+                    </button>
+                    <button class="cart-btn" onclick="navigate('cart')">
+                        <span class="material-icons-outlined">shopping_cart</span>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <nav class="nav-bar">
+            <div class="container nav-inner">
+                <a href="#" class="nav-link" onclick="navigate('home')">Ana Sayfa</a>
+                <a href="#" class="nav-link" onclick="navigate('category', 'telefon')">Telefon Aksesuarları</a>
+                <a href="#" class="nav-link" onclick="navigate('category', 'araba')">Araba Aksesuarları</a>
+                <a href="#" class="nav-link" onclick="navigate('category', 'tumu')">Tüm Ürünler</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <span class="logo"><span class="logo-rota">Rota</span><span class="logo-gmc">GMC</span></span>
+            <button class="close-menu-btn" id="closeMenuBtn">
+                <span class="material-icons-outlined">close</span>
+            </button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="#" onclick="navigate('home'); closeMobileMenu()">Ana Sayfa</a>
+            <a href="#" onclick="navigate('category', 'telefon'); closeMobileMenu()">Telefon Aksesuarları</a>
+            <a href="#" onclick="navigate('category', 'araba'); closeMobileMenu()">Araba Aksesuarları</a>
+            <a href="#" onclick="navigate('category', 'tumu'); closeMobileMenu()">Tüm Ürünler</a>
+            <a href="#" onclick="navigate('cart'); closeMobileMenu()">Sepetim</a>
+        </div>
+    </div>
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- ANA SAYFA -->
+    <main>
+        <section class="page" id="homePage">
+            <!-- HERO SLIDER -->
+            <div class="hero-slider">
+                <div class="slider-track" id="sliderTrack"></div>
+                <button class="slider-btn slider-prev" onclick="slideHero(-1)">
+                    <span class="material-icons-outlined">chevron_left</span>
+                </button>
+                <button class="slider-btn slider-next" onclick="slideHero(1)">
+                    <span class="material-icons-outlined">chevron_right</span>
+                </button>
+                <div class="slider-dots" id="sliderDots"></div>
+            </div>
+
+            <!-- KATEGORİLER -->
+            <div class="container">
+                <div class="section-header">
+                    <h2>Kategoriler</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="category-cards">
+                    <div class="category-card" onclick="navigate('category', 'telefon')">
+                        <div class="category-icon">
+                            <span class="material-icons-outlined">smartphone</span>
+                        </div>
+                        <h3>Telefon Aksesuarları</h3>
+                        <p>Kılıf, şarj, kablo ve daha fazlası</p>
+                    </div>
+                    <div class="category-card" onclick="navigate('category', 'araba')">
+                        <div class="category-icon">
+                            <span class="material-icons-outlined">directions_car</span>
+                        </div>
+                        <h3>Araba Aksesuarları</h3>
+                        <p>Tutucu, koku, organizer ve daha fazlası</p>
+                    </div>
+                </div>
+
+                <!-- ÖNE ÇIKAN ÜRÜNLER -->
+                <div class="section-header">
+                    <h2>Öne Çıkan Ürünler</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="products-grid" id="featuredProducts"></div>
+
+                <!-- YENİ ÜRÜNLER -->
+                <div class="section-header">
+                    <h2>Yeni Eklenenler</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="products-grid" id="newProducts"></div>
+            </div>
+        </section>
+
+        <!-- KATEGORİ SAYFASI -->
+        <section class="page hidden" id="categoryPage">
+            <div class="container">
+                <div class="breadcrumb" id="breadcrumb"></div>
+                <div class="section-header">
+                    <h2 id="categoryTitle">Ürünler</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="filter-bar">
+                    <select id="sortSelect" onchange="applySorting()">
+                        <option value="default">Varsayılan Sıralama</option>
+                        <option value="price-asc">Fiyat: Düşükten Yükseğe</option>
+                        <option value="price-desc">Fiyat: Yüksekten Düşüğe</option>
+                        <option value="name-asc">İsim: A-Z</option>
+                    </select>
+                </div>
+                <div class="products-grid" id="categoryProducts"></div>
+            </div>
+        </section>
+
+        <!-- ÜRÜN DETAY SAYFASI -->
+        <section class="page hidden" id="productPage">
+            <div class="container">
+                <div class="breadcrumb" id="productBreadcrumb"></div>
+                <div class="product-detail" id="productDetail"></div>
+            </div>
+        </section>
+
+        <!-- SEPET SAYFASI -->
+        <section class="page hidden" id="cartPage">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Sepetim</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="cart-content" id="cartContent"></div>
+            </div>
+        </section>
+
+        <!-- ÖDEME / SİPARİŞ SAYFASI -->
+        <section class="page hidden" id="checkoutPage">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Sipariş Bilgileri</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="checkout-wrapper">
+                    <div class="checkout-form">
+                        <div class="form-section">
+                            <h3><span class="material-icons-outlined">person</span> Kişisel Bilgiler</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">İsim *</label>
+                                    <input type="text" id="firstName" placeholder="İsminiz" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Soyisim *</label>
+                                    <input type="text" id="lastName" placeholder="Soyisminiz" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Telefon Numarası *</label>
+                                <input type="tel" id="phone" placeholder="05XX XXX XX XX" required>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3><span class="material-icons-outlined">location_on</span> Teslimat Adresi</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="province">İl *</label>
+                                    <select id="province" onchange="loadDistricts()" required>
+                                        <option value="">İl Seçiniz</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="district">İlçe *</label>
+                                    <select id="district" onchange="loadNeighborhoods()" required>
+                                        <option value="">Önce İl Seçiniz</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="neighborhood">Mahalle *</label>
+                                <select id="neighborhood" required>
+                                    <option value="">Önce İlçe Seçiniz</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="addressDetail">Açık Adres (Sokak, Bina No, Kapı No) *</label>
+                                <textarea id="addressDetail" rows="3" placeholder="Örn: Atatürk Cad. No:15 Daire:3" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section order-summary-section">
+                            <h3><span class="material-icons-outlined">receipt_long</span> Sipariş Özeti</h3>
+                            <div id="checkoutItems"></div>
+                            <div class="checkout-total">
+                                <span>Toplam Tutar:</span>
+                                <span id="checkoutTotal" class="total-price">0,00 ₺</span>
+                            </div>
+                        </div>
+
+                        <div class="whatsapp-info">
+                            <span class="material-icons-outlined">info</span>
+                            <p>Siparişlerimiz WhatsApp üzerinden alınmaktadır. Aşağıdaki butona tıklayarak sipariş bilgileriniz otomatik olarak WhatsApp mesajı olarak hazırlanacaktır. Mesajı gönderdikten sonra sizinle iletişime geçeceğiz.</p>
+                        </div>
+
+                        <button class="whatsapp-btn" onclick="sendWhatsApp()">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="white" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            WhatsApp ile Siparişi Tamamla
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4><span class="logo-rota">Rota</span><span class="logo-gmc">GMC</span></h4>
+                    <p>Telefon ve araba aksesuarlarında en kaliteli ürünler, en uygun fiyatlarla RotaGMC'de.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Hızlı Linkler</h4>
+                    <a href="#" onclick="navigate('home')">Ana Sayfa</a>
+                    <a href="#" onclick="navigate('category', 'telefon')">Telefon Aksesuarları</a>
+                    <a href="#" onclick="navigate('category', 'araba')">Araba Aksesuarları</a>
+                </div>
+                <div class="footer-col">
+                    <h4>İletişim</h4>
+                    <p><span class="material-icons-outlined">phone</span> +90 5330912450</p>
+                    <p><span class="material-icons-outlined">email</span> info@rotagmc.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 RotaGMC - Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- TOAST BİLDİRİM -->
+    <div class="toast" id="toast">
+        <span class="material-icons-outlined">check_circle</span>
+        <span id="toastMessage">Ürün sepete eklendi!</span>
+    </div>
+
+    <script src="js/locations.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
