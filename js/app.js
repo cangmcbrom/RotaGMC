@@ -42,6 +42,14 @@ function handleRoute() {
         showPage('cart');
     } else if (hash === 'checkout') {
         showPage('checkout');
+    } else if (hash === 'about') {
+        showPage('about');
+    } else if (hash === 'return') {
+        showPage('return');
+    } else if (hash === 'privacy') {
+        showPage('privacy');
+    } else if (hash === 'faq') {
+        showPage('faq');
     }
 }
 
@@ -56,6 +64,14 @@ function navigate(page, param) {
         window.location.hash = 'cart';
     } else if (page === 'checkout') {
         window.location.hash = 'checkout';
+    } else if (page === 'about') {
+        window.location.hash = 'about';
+    } else if (page === 'return') {
+        window.location.hash = 'return';
+    } else if (page === 'privacy') {
+        window.location.hash = 'privacy';
+    } else if (page === 'faq') {
+        window.location.hash = 'faq';
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -80,7 +96,18 @@ function showPage(page, param) {
     } else if (page === 'checkout') {
         document.getElementById('checkoutPage').classList.remove('hidden');
         renderCheckout();
+    } else if (page === 'about') {
+        document.getElementById('aboutPage').classList.remove('hidden');
+    } else if (page === 'return') {
+        document.getElementById('returnPage').classList.remove('hidden');
+    } else if (page === 'privacy') {
+        document.getElementById('privacyPage').classList.remove('hidden');
+    } else if (page === 'faq') {
+        document.getElementById('faqPage').classList.remove('hidden');
     }
+
+    // Mobil alt menü aktif durumu güncelle
+    updateMobileNav(page);
 }
 
 // ===== SLIDER =====
@@ -169,6 +196,11 @@ function createProductCard(product) {
                     <span class="current-price">${formatPrice(product.price)}</span>
                     ${product.oldPrice ? `<span class="old-price">${formatPrice(product.oldPrice)}</span>` : ''}
                 </div>
+                ${product.rating ? `
+                <div class="star-rating">
+                    <div class="stars">${renderStars(product.rating)}</div>
+                    <span class="rating-text">${product.rating} (${product.reviewCount})</span>
+                </div>` : ''}
             </div>
             <div class="product-card-actions" onclick="event.stopPropagation()">
                 <button class="btn-add-cart" onclick="addToCart(${product.id}); event.stopPropagation();">
@@ -278,6 +310,11 @@ function loadProductDetail(productId) {
         <div class="product-info">
             <span class="product-category-tag">${catName}</span>
             <h1>${product.name}</h1>
+            ${product.rating ? `
+            <div class="star-rating">
+                <div class="stars">${renderStars(product.rating)}</div>
+                <span class="rating-text">${product.rating} / 5 (${product.reviewCount} değerlendirme)</span>
+            </div>` : ''}
             <div class="product-price-section">
                 <span class="current-price">${formatPrice(product.price)}</span>
                 ${product.oldPrice ? `<span class="old-price">${formatPrice(product.oldPrice)}</span>` : ''}
@@ -332,6 +369,12 @@ function updateCartCount() {
     const cart = getCart();
     const total = cart.reduce((sum, item) => sum + item.quantity, 0);
     document.getElementById('cartCount').textContent = total;
+    // Mobil alt menü sepet sayısı
+    const mobCount = document.getElementById('mobCartCount');
+    if (mobCount) {
+        mobCount.textContent = total;
+        mobCount.style.display = total > 0 ? 'flex' : 'none';
+    }
 }
 
 function addToCart(productId, qty = 1) {
@@ -708,4 +751,56 @@ function formatPrice(price) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }) + ' ₺';
+}
+
+// ===== YILDIZ PUANLAMA =====
+function renderStars(rating) {
+    let html = '';
+    const fullStars = Math.floor(rating);
+    const hasHalf = rating % 1 >= 0.3;
+    const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
+
+    for (let i = 0; i < fullStars; i++) {
+        html += '<span class="material-icons-outlined">star</span>';
+    }
+    if (hasHalf) {
+        html += '<span class="material-icons-outlined">star_half</span>';
+    }
+    for (let i = 0; i < emptyStars; i++) {
+        html += '<span class="material-icons-outlined" style="color:#ddd">star_outline</span>';
+    }
+    return html;
+}
+
+// ===== FAQ TOGGLE =====
+function toggleFaq(element) {
+    // Diğerlerini kapat
+    document.querySelectorAll('.faq-item').forEach(item => {
+        if (item !== element) item.classList.remove('active');
+    });
+    element.classList.toggle('active');
+}
+
+// ===== MOBİL ALT MENÜ =====
+function updateMobileNav(page) {
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    const navMap = {
+        'home': 'mobNavHome',
+        'category': 'mobNavCategory',
+        'cart': 'mobNavCart',
+        'checkout': 'mobNavCart',
+        'faq': 'mobNavFaq',
+        'about': 'mobNavFaq',
+        'return': 'mobNavFaq',
+        'privacy': 'mobNavFaq'
+    };
+
+    const navId = navMap[page];
+    if (navId) {
+        const el = document.getElementById(navId);
+        if (el) el.classList.add('active');
+    }
 }

@@ -206,3 +206,33 @@ const products = [
         badge: "Premium"
     }
 ];
+
+
+// =============================================
+// ÜRÜN PUANLARI
+// =============================================
+const productRatings = {
+    1: { rating: 4.8, reviewCount: 124 },
+    2: { rating: 4.6, reviewCount: 89 },
+    3: { rating: 4.3, reviewCount: 56 },
+    4: { rating: 4.9, reviewCount: 203 },
+    5: { rating: 4.5, reviewCount: 78 },
+    6: { rating: 4.2, reviewCount: 34 },
+    7: { rating: 4.7, reviewCount: 156 },
+    8: { rating: 4.4, reviewCount: 42 },
+    9: { rating: 4.8, reviewCount: 187 },
+    10: { rating: 4.5, reviewCount: 95 },
+    11: { rating: 4.3, reviewCount: 67 },
+    12: { rating: 4.6, reviewCount: 73 },
+    13: { rating: 4.7, reviewCount: 142 },
+    14: { rating: 4.1, reviewCount: 38 },
+    15: { rating: 4.0, reviewCount: 29 },
+    16: { rating: 4.9, reviewCount: 112 }
+};
+
+products.forEach(p => {
+    if (productRatings[p.id]) {
+        p.rating = parseFloat(productRatings[p.id].rating);
+        p.reviewCount = productRatings[p.id].reviewCount;
+    }
+});
