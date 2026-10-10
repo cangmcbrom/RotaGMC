@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RotaGMC - Aksesuar MaÄŸazasÄ±</title>
+    <title>RotaGMC - Aksesuar Mağazası</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,8 +14,8 @@
     <header class="header">
         <div class="header-top">
             <div class="container header-top-inner">
-                <span>Ãœcretsiz kargo fÄ±rsatlarÄ± iÃ§in takipte kalÄ±n!</span>
-                <span>YardÄ±m & Destek</span>
+                <span>Ücretsiz kargo fırsatları için takipte kalın!</span>
+                <span>Yardım & Destek</span>
             </div>
         </div>
         <div class="header-main">
@@ -23,11 +23,11 @@
                 <button class="mobile-menu-btn" id="mobileMenuBtn">
                     <span class="material-icons-outlined">menu</span>
                 </button>
-                <a href="#" class="logo" onclick="navigate('home')">
+                <a href="javascript:void(0)" class="logo" onclick="navigate('home')">
                     <span class="logo-rota">Rota</span><span class="logo-gmc">GMC</span>
                 </a>
                 <div class="search-bar" id="searchBar">
-                    <input type="text" id="searchInput" placeholder="ÃœrÃ¼n ara..." autocomplete="off">
+                    <input type="text" id="searchInput" placeholder="Ürün ara..." autocomplete="off">
                     <button class="search-btn" onclick="performSearch()">
                         <span class="material-icons-outlined">search</span>
                     </button>
@@ -46,10 +46,10 @@
         </div>
         <nav class="nav-bar">
             <div class="container nav-inner">
-                <a href="#" class="nav-link" onclick="navigate('home')">Ana Sayfa</a>
-                <a href="#" class="nav-link" onclick="navigate('category', 'telefon')">Telefon AksesuarlarÄ±</a>
-                <a href="#" class="nav-link" onclick="navigate('category', 'araba')">Araba AksesuarlarÄ±</a>
-                <a href="#" class="nav-link" onclick="navigate('category', 'tumu')">TÃ¼m ÃœrÃ¼nler</a>
+                <a href="javascript:void(0)" class="nav-link" onclick="navigate('home')">Ana Sayfa</a>
+                <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'telefon')">Telefon Aksesuarları</a>
+                <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'araba')">Araba Aksesuarları</a>
+                <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'tumu')">Tüm Ürünler</a>
             </div>
         </nav>
     </header>
@@ -64,9 +64,9 @@
         </div>
         <div class="mobile-menu-links">
             <a href="javascript:void(0)" onclick="navigate('home'); closeMobileMenu()">Ana Sayfa</a>
-            <a href="javascript:void(0)" onclick="navigate('category', 'telefon'); closeMobileMenu()">Telefon AksesuarlarÄ±</a>
-            <a href="javascript:void(0)" onclick="navigate('category', 'araba'); closeMobileMenu()">Araba AksesuarlarÄ±</a>
-            <a href="javascript:void(0)" onclick="navigate('category', 'tumu'); closeMobileMenu()">TÃ¼m ÃœrÃ¼nler</a>
+            <a href="javascript:void(0)" onclick="navigate('category', 'telefon'); closeMobileMenu()">Telefon Aksesuarları</a>
+            <a href="javascript:void(0)" onclick="navigate('category', 'araba'); closeMobileMenu()">Araba Aksesuarları</a>
+            <a href="javascript:void(0)" onclick="navigate('category', 'tumu'); closeMobileMenu()">Tüm Ürünler</a>
             <a href="javascript:void(0)" onclick="navigate('cart'); closeMobileMenu()">Sepetim</a>
         </div>
     </div>
@@ -87,7 +87,7 @@
                 <div class="slider-dots" id="sliderDots"></div>
             </div>
 
-            <!-- KATEGORÄ°LER -->
+            <!-- KATEGORİLER -->
             <div class="container">
                 <div class="section-header">
                     <h2>Kategoriler</h2>
@@ -98,26 +98,26 @@
                         <div class="category-icon">
                             <span class="material-icons-outlined">smartphone</span>
                         </div>
-                        <h3>Telefon AksesuarlarÄ±</h3>
-                        <p>KÄ±lÄ±f, ÅŸarj, kablo ve daha fazlasÄ±</p>
+                        <h3>Telefon Aksesuarları</h3>
+                        <p>Kılıf, şarj, kablo ve daha fazlası</p>
                     </div>
                     <div class="category-card" onclick="navigate('category', 'araba')">
                         <div class="category-icon">
                             <span class="material-icons-outlined">directions_car</span>
                         </div>
-                        <h3>Araba AksesuarlarÄ±</h3>
-                        <p>Tutucu, koku, organizer ve daha fazlasÄ±</p>
+                        <h3>Araba Aksesuarları</h3>
+                        <p>Tutucu, koku, organizer ve daha fazlası</p>
                     </div>
                 </div>
 
-                <!-- Ã–NE Ã‡IKAN ÃœRÃœNLER -->
+                <!-- ÖNE ÇIKAN ÜRÜNLER -->
                 <div class="section-header">
-                    <h2>Ã–ne Ã‡Ä±kan ÃœrÃ¼nler</h2>
+                    <h2>Öne Çıkan Ürünler</h2>
                     <div class="section-line"></div>
                 </div>
                 <div class="products-grid" id="featuredProducts"></div>
 
-                <!-- YENÄ° ÃœRÃœNLER -->
+                <!-- YENİ ÜRÜNLER -->
                 <div class="section-header">
                     <h2>Yeni Eklenenler</h2>
                     <div class="section-line"></div>
@@ -126,27 +126,27 @@
             </div>
         </section>
 
-        <!-- KATEGORÄ° SAYFASI -->
+        <!-- KATEGORİ SAYFASI -->
         <section class="page hidden" id="categoryPage">
             <div class="container">
                 <div class="breadcrumb" id="breadcrumb"></div>
                 <div class="section-header">
-                    <h2 id="categoryTitle">ÃœrÃ¼nler</h2>
+                    <h2 id="categoryTitle">Ürünler</h2>
                     <div class="section-line"></div>
                 </div>
                 <div class="filter-bar">
                     <select id="sortSelect" onchange="applySorting()">
-                        <option value="default">VarsayÄ±lan SÄ±ralama</option>
-                        <option value="price-asc">Fiyat: DÃ¼ÅŸÃ¼kten YÃ¼kseÄŸe</option>
-                        <option value="price-desc">Fiyat: YÃ¼ksekten DÃ¼ÅŸÃ¼ÄŸe</option>
-                        <option value="name-asc">Ä°sim: A-Z</option>
+                        <option value="default">Varsayılan Sıralama</option>
+                        <option value="price-asc">Fiyat: Düşükten Yükseğe</option>
+                        <option value="price-desc">Fiyat: Yüksekten Düşüğe</option>
+                        <option value="name-asc">İsim: A-Z</option>
                     </select>
                 </div>
                 <div class="products-grid" id="categoryProducts"></div>
             </div>
         </section>
 
-        <!-- ÃœRÃœN DETAY SAYFASI -->
+        <!-- ÜRÜN DETAY SAYFASI -->
         <section class="page hidden" id="productPage">
             <div class="container">
                 <div class="breadcrumb" id="productBreadcrumb"></div>
@@ -165,21 +165,21 @@
             </div>
         </section>
 
-        <!-- Ã–DEME / SÄ°PARÄ°Å SAYFASI -->
+        <!-- ÖDEME / SİPARİŞ SAYFASI -->
         <section class="page hidden" id="checkoutPage">
             <div class="container">
                 <div class="section-header">
-                    <h2>SipariÅŸ Bilgileri</h2>
+                    <h2>Sipariş Bilgileri</h2>
                     <div class="section-line"></div>
                 </div>
                 <div class="checkout-wrapper">
                     <div class="checkout-form">
                         <div class="form-section">
-                            <h3><span class="material-icons-outlined">person</span> KiÅŸisel Bilgiler</h3>
+                            <h3><span class="material-icons-outlined">person</span> Kişisel Bilgiler</h3>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="firstName">Ä°sim *</label>
-                                    <input type="text" id="firstName" placeholder="Ä°sminiz" required>
+                                    <label for="firstName">İsim *</label>
+                                    <input type="text" id="firstName" placeholder="İsminiz" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="lastName">Soyisim *</label>
@@ -187,7 +187,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="phone">Telefon NumarasÄ± *</label>
+                                <label for="phone">Telefon Numarası *</label>
                                 <input type="tel" id="phone" placeholder="05XX XXX XX XX" required>
                             </div>
                         </div>
@@ -196,148 +196,149 @@
                             <h3><span class="material-icons-outlined">location_on</span> Teslimat Adresi</h3>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="province">Ä°l *</label>
+                                    <label for="province">İl *</label>
                                     <select id="province" onchange="loadDistricts()" required>
-                                        <option value="">Ä°l SeÃ§iniz</option>
+                                        <option value="">İl Seçiniz</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="district">Ä°lÃ§e *</label>
+                                    <label for="district">İlçe *</label>
                                     <select id="district" onchange="loadNeighborhoods()" required>
-                                        <option value="">Ã–nce Ä°l SeÃ§iniz</option>
+                                        <option value="">Önce İl Seçiniz</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="neighborhood">Mahalle *</label>
                                 <select id="neighborhood" required>
-                                    <option value="">Ã–nce Ä°lÃ§e SeÃ§iniz</option>
+                                    <option value="">Önce İlçe Seçiniz</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="addressDetail">AÃ§Ä±k Adres (Sokak, Bina No, KapÄ± No) *</label>
-                                <textarea id="addressDetail" rows="3" placeholder="Ã–rn: AtatÃ¼rk Cad. No:15 Daire:3" required></textarea>
+                                <label for="addressDetail">Açık Adres (Sokak, Bina No, Kapı No) *</label>
+                                <textarea id="addressDetail" rows="3" placeholder="Örn: Atatürk Cad. No:15 Daire:3" required></textarea>
                             </div>
                         </div>
 
                         <div class="form-section order-summary-section">
-                            <h3><span class="material-icons-outlined">receipt_long</span> SipariÅŸ Ã–zeti</h3>
+                            <h3><span class="material-icons-outlined">receipt_long</span> Sipariş Özeti</h3>
                             <div id="checkoutItems"></div>
                             <div class="checkout-total">
                                 <span>Toplam Tutar:</span>
-                                <span id="checkoutTotal" class="total-price">0,00 â‚º</span>
+                                <span id="checkoutTotal" class="total-price">0,00 ₺</span>
                             </div>
                         </div>
 
                         <div class="whatsapp-info">
                             <span class="material-icons-outlined">info</span>
-                            <p>SipariÅŸlerimiz WhatsApp Ã¼zerinden alÄ±nmaktadÄ±r. AÅŸaÄŸÄ±daki butona tÄ±klayarak sipariÅŸ bilgileriniz otomatik olarak WhatsApp mesajÄ± olarak hazÄ±rlanacaktÄ±r. MesajÄ± gÃ¶nderdikten sonra sizinle iletiÅŸime geÃ§eceÄŸiz.</p>
+                            <p>Siparişlerimiz WhatsApp üzerinden alınmaktadır. Aşağıdaki butona tıklayarak sipariş bilgileriniz otomatik olarak WhatsApp mesajı olarak hazırlanacaktır. Mesajı gönderdikten sonra sizinle iletişime geçeceğiz.</p>
                         </div>
 
                         <button class="whatsapp-btn" onclick="sendWhatsApp()">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path fill="white" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                            WhatsApp ile SipariÅŸi Tamamla
+                            WhatsApp ile Siparişi Tamamla
                         </button>
                     </div>
                 </div>
             </div>
         </section>
+
         <!-- HAKKIMIZDA SAYFASI -->
         <section class="page hidden" id="aboutPage">
             <div class="info-page">
-                <div class="breadcrumb"><a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">HakkÄ±mÄ±zda</span></div>
-                <h1>HakkÄ±mÄ±zda</h1>
-                <p class="page-subtitle">RotaGMC olarak sizlere en kaliteli aksesuarlarÄ± sunuyoruz.</p>
+                <div class="breadcrumb"><a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Hakkımızda</span></div>
+                <h1>Hakkımızda</h1>
+                <p class="page-subtitle">RotaGMC olarak sizlere en kaliteli aksesuarları sunuyoruz.</p>
 
                 <div class="info-card">
                     <h2><span class="material-icons-outlined">storefront</span> Biz Kimiz?</h2>
-                    <p>RotaGMC, telefon ve araba aksesuarlarÄ± alanÄ±nda kaliteli Ã¼rÃ¼nleri uygun fiyatlarla mÃ¼ÅŸterilerine sunan gÃ¼venilir bir online maÄŸazadÄ±r. MÃ¼ÅŸteri memnuniyetini her ÅŸeyin Ã¼zerinde tutarak, en yeni ve en popÃ¼ler aksesuarlarÄ± sizlerle buluÅŸturuyoruz.</p>
+                    <p>RotaGMC, telefon ve araba aksesuarları alanında kaliteli ürünleri uygun fiyatlarla müşterilerine sunan güvenilir bir online mağazadır. Müşteri memnuniyetini her şeyin üzerinde tutarak, en yeni ve en popüler aksesuarları sizlerle buluşturuyoruz.</p>
                 </div>
 
                 <div class="info-card">
                     <h2><span class="material-icons-outlined">verified</span> Neden RotaGMC?</h2>
                     <ul>
-                        <li>âœ… Orijinal ve kaliteli Ã¼rÃ¼nler</li>
-                        <li>âœ… Uygun fiyat garantisi</li>
-                        <li>âœ… HÄ±zlÄ± kargo ile teslimat</li>
-                        <li>âœ… 14 gÃ¼n koÅŸulsuz iade hakkÄ±</li>
-                        <li>âœ… WhatsApp Ã¼zerinden 7/24 mÃ¼ÅŸteri desteÄŸi</li>
-                        <li>âœ… GÃ¼venli alÄ±ÅŸveriÅŸ deneyimi</li>
+                        <li>Orijinal ve kaliteli ürünler</li>
+                        <li>Uygun fiyat garantisi</li>
+                        <li>Hızlı kargo ile teslimat</li>
+                        <li>14 gün koşulsuz iade hakkı</li>
+                        <li>WhatsApp üzerinden 7/24 müşteri desteği</li>
+                        <li>Güvenli alışveriş deneyimi</li>
                     </ul>
                 </div>
 
                 <div class="info-card">
                     <h2><span class="material-icons-outlined">emoji_objects</span> Vizyonumuz</h2>
-                    <p>Teknoloji ve otomobil aksesuarlarÄ± sektÃ¶rÃ¼nde TÃ¼rkiye'nin en gÃ¼venilir online maÄŸazasÄ± olmak ve mÃ¼ÅŸterilerimize her zaman en iyi alÄ±ÅŸveriÅŸ deneyimini sunmak temel hedefimizdir.</p>
+                    <p>Teknoloji ve otomobil aksesuarları sektöründe Türkiye'nin en güvenilir online mağazası olmak ve müşterilerimize her zaman en iyi alışveriş deneyimini sunmak temel hedefimizdir.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Ä°ADE POLÄ°TÄ°KASI SAYFASI -->
+        <!-- İADE POLİTİKASI SAYFASI -->
         <section class="page hidden" id="returnPage">
             <div class="info-page">
-                <div class="breadcrumb"><a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Ä°ade & DeÄŸiÅŸim</span></div>
-                <h1>Ä°ade & DeÄŸiÅŸim PolitikasÄ±</h1>
-                <p class="page-subtitle">MÃ¼ÅŸteri memnuniyeti bizim iÃ§in Ã¶nceliktir.</p>
+                <div class="breadcrumb"><a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">İade &amp; Değişim</span></div>
+                <h1>İade &amp; Değişim Politikası</h1>
+                <p class="page-subtitle">Müşteri memnuniyeti bizim için önceliktir.</p>
 
                 <div class="info-card">
-                    <h2><span class="material-icons-outlined">refresh</span> Ä°ade KoÅŸullarÄ±</h2>
-                    <p>ÃœrÃ¼nlerimizi teslim aldÄ±ÄŸÄ±nÄ±z tarihten itibaren <strong>14 gÃ¼n</strong> iÃ§erisinde koÅŸulsuz olarak iade edebilirsiniz.</p>
+                    <h2><span class="material-icons-outlined">refresh</span> İade Koşulları</h2>
+                    <p>Ürünlerimizi teslim aldığınız tarihten itibaren <strong>14 gün</strong> içerisinde koşulsuz olarak iade edebilirsiniz.</p>
                     <ul>
-                        <li>ÃœrÃ¼n kullanÄ±lmamÄ±ÅŸ ve orijinal ambalajÄ±nda olmalÄ±dÄ±r</li>
+                        <li>Ürün kullanılmamış ve orijinal ambalajında olmalıdır</li>
                         <li>Fatura ve irsaliye iade paketine eklenmelidir</li>
-                        <li>ÃœrÃ¼n hasar gÃ¶rmemiÅŸ olmalÄ±dÄ±r</li>
-                        <li>Kargo Ã¼creti tarafÄ±mÄ±zca karÅŸÄ±lanÄ±r</li>
+                        <li>Ürün hasar görmemiş olmalıdır</li>
+                        <li>Kargo ücreti tarafımızca karşılanır</li>
                     </ul>
                 </div>
 
                 <div class="info-card">
-                    <h2><span class="material-icons-outlined">swap_horiz</span> DeÄŸiÅŸim SÃ¼reci</h2>
-                    <p>ÃœrÃ¼nÃ¼nÃ¼zÃ¼ farklÄ± bir Ã¼rÃ¼nle deÄŸiÅŸtirmek isterseniz WhatsApp Ã¼zerinden bizimle iletiÅŸime geÃ§meniz yeterlidir. DeÄŸiÅŸim iÅŸlemi 3-5 iÅŸ gÃ¼nÃ¼ iÃ§erisinde tamamlanÄ±r.</p>
+                    <h2><span class="material-icons-outlined">swap_horiz</span> Değişim Süreci</h2>
+                    <p>Ürününüzü farklı bir ürünle değiştirmek isterseniz WhatsApp üzerinden bizimle iletişime geçmeniz yeterlidir. Değişim işlemi 3-5 iş günü içerisinde tamamlanır.</p>
                 </div>
 
                 <div class="info-card">
-                    <h2><span class="material-icons-outlined">warning_amber</span> Ä°ade Edilemeyen ÃœrÃ¼nler</h2>
+                    <h2><span class="material-icons-outlined">warning_amber</span> İade Edilemeyen Ürünler</h2>
                     <ul>
-                        <li>Hijyenik Ã¼rÃ¼nler (ambalajÄ± aÃ§Ä±lmÄ±ÅŸsa)</li>
-                        <li>KiÅŸiye Ã¶zel Ã¼retilen Ã¼rÃ¼nler</li>
-                        <li>KullanÄ±m sonrasÄ± hasar gÃ¶rmÃ¼ÅŸ Ã¼rÃ¼nler</li>
+                        <li>Hijyenik ürünler (ambalajı açılmışsa)</li>
+                        <li>Kişiye özel üretilen ürünler</li>
+                        <li>Kullanım sonrası hasar görmüş ürünler</li>
                     </ul>
                 </div>
 
                 <div class="info-card">
-                    <h2><span class="material-icons-outlined">phone_in_talk</span> Ä°ade BaÅŸvurusu</h2>
-                    <p>Ä°ade iÅŸlemi baÅŸlatmak iÃ§in WhatsApp Ã¼zerinden sipariÅŸ numaranÄ±z ve iade sebebiniz ile birlikte bize ulaÅŸÄ±n. Ekibimiz size en kÄ±sa sÃ¼rede dÃ¶nÃ¼ÅŸ yapacaktÄ±r.</p>
+                    <h2><span class="material-icons-outlined">phone_in_talk</span> İade Başvurusu</h2>
+                    <p>İade işlemi başlatmak için WhatsApp üzerinden sipariş numaranız ve iade sebebiniz ile birlikte bize ulaşın. Ekibimiz size en kısa sürede dönüş yapacaktır.</p>
                 </div>
             </div>
         </section>
 
-        <!-- GÄ°ZLÄ°LÄ°K POLÄ°TÄ°KASI SAYFASI -->
+        <!-- GİZLİLİK POLİTİKASI SAYFASI -->
         <section class="page hidden" id="privacyPage">
             <div class="info-page">
-                <div class="breadcrumb"><a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Gizlilik PolitikasÄ±</span></div>
-                <h1>Gizlilik PolitikasÄ±</h1>
-                <p class="page-subtitle">KiÅŸisel verilerinizin gÃ¼venliÄŸi bizim iÃ§in Ã¶nemlidir.</p>
+                <div class="breadcrumb"><a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Gizlilik Politikası</span></div>
+                <h1>Gizlilik Politikası</h1>
+                <p class="page-subtitle">Kişisel verilerinizin güvenliği bizim için önemlidir.</p>
 
                 <div class="info-card">
-                    <h2><span class="material-icons-outlined">security</span> Veri GÃ¼venliÄŸi</h2>
-                    <p>RotaGMC olarak mÃ¼ÅŸterilerimizin kiÅŸisel verilerinin korunmasÄ±na bÃ¼yÃ¼k Ã¶nem veriyoruz. SipariÅŸ sÃ¼recinde paylaÅŸtÄ±ÄŸÄ±nÄ±z bilgiler yalnÄ±zca sipariÅŸinizin iÅŸlenmesi amacÄ±yla kullanÄ±lÄ±r ve Ã¼Ã§Ã¼ncÃ¼ ÅŸahÄ±slarla paylaÅŸÄ±lmaz.</p>
+                    <h2><span class="material-icons-outlined">security</span> Veri Güvenliği</h2>
+                    <p>RotaGMC olarak müşterilerimizin kişisel verilerinin korunmasına büyük önem veriyoruz. Sipariş sürecinde paylaştığınız bilgiler yalnızca siparişinizin işlenmesi amacıyla kullanılır ve üçüncü şahıslarla paylaşılmaz.</p>
                 </div>
 
                 <div class="info-card">
                     <h2><span class="material-icons-outlined">inventory</span> Toplanan Bilgiler</h2>
-                    <p>SipariÅŸ iÅŸlemi sÄ±rasÄ±nda aÅŸaÄŸÄ±daki bilgiler toplanmaktadÄ±r:</p>
+                    <p>Sipariş işlemi sırasında aşağıdaki bilgiler toplanmaktadır:</p>
                     <ul>
                         <li>Ad ve soyad</li>
-                        <li>Telefon numarasÄ±</li>
+                        <li>Telefon numarası</li>
                         <li>Teslimat adresi</li>
                     </ul>
-                    <p>Bu bilgiler yalnÄ±zca sipariÅŸ teslimatÄ± ve mÃ¼ÅŸteri iletiÅŸimi amacÄ±yla kullanÄ±lmaktadÄ±r.</p>
+                    <p>Bu bilgiler yalnızca sipariş teslimatı ve müşteri iletişimi amacıyla kullanılmaktadır.</p>
                 </div>
 
                 <div class="info-card">
-                    <h2><span class="material-icons-outlined">cookie</span> Ã‡erezler</h2>
-                    <p>Sitemiz, sepet bilgilerinizi hatÄ±rlamak iÃ§in tarayÄ±cÄ±nÄ±zÄ±n yerel depolama Ã¶zelliÄŸini (localStorage) kullanmaktadÄ±r. Bu veriler yalnÄ±zca sizin cihazÄ±nÄ±zda saklanÄ±r ve herhangi bir sunucuya gÃ¶nderilmez.</p>
+                    <h2><span class="material-icons-outlined">cookie</span> Çerezler</h2>
+                    <p>Sitemiz, sepet bilgilerinizi hatırlamak için tarayıcınızın yerel depolama özelliğini (localStorage) kullanmaktadır. Bu veriler yalnızca sizin cihazınızda saklanır ve herhangi bir sunucuya gönderilmez.</p>
                 </div>
             </div>
         </section>
@@ -346,42 +347,42 @@
         <section class="page hidden" id="faqPage">
             <div class="info-page">
                 <div class="breadcrumb"><a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">SSS</span></div>
-                <h1>SÄ±kÃ§a Sorulan Sorular</h1>
-                <p class="page-subtitle">Merak ettiklerinize hÄ±zlÄ±ca cevap bulun.</p>
+                <h1>Sıkça Sorulan Sorular</h1>
+                <p class="page-subtitle">Merak ettiklerinize hızlıca cevap bulun.</p>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">SipariÅŸ nasÄ±l verebilirim? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">BeÄŸendiÄŸiniz Ã¼rÃ¼nÃ¼ sepete ekleyin veya "SatÄ±n Al" butonuna basÄ±n. SipariÅŸ bilgilerinizi doldurun ve "WhatsApp ile SipariÅŸ Tamamla" butonuna tÄ±klayÄ±n. Otomatik oluÅŸturulan mesajÄ± bize gÃ¶nderin, ekibimiz hemen sizinle iletiÅŸime geÃ§ecektir.</div></div>
+                    <button class="faq-question">Sipariş nasıl verebilirim? <span class="material-icons-outlined">expand_more</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Beğendiğiniz ürünü sepete ekleyin veya "Satın Al" butonuna basın. Sipariş bilgilerinizi doldurun ve "WhatsApp ile Sipariş Tamamla" butonuna tıklayın. Otomatik oluşturulan mesajı bize gönderin, ekibimiz hemen sizinle iletişime geçecektir.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">Ã–deme nasÄ±l yapÄ±lÄ±yor? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">SipariÅŸinizi WhatsApp Ã¼zerinden onayladÄ±ktan sonra Ã¶deme detaylarÄ± tarafÄ±mÄ±zca iletilecektir. Havale/EFT ile gÃ¼venli Ã¶deme yapabilirsiniz.</div></div>
+                    <button class="faq-question">Ödeme nasıl yapılıyor? <span class="material-icons-outlined">expand_more</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Siparişinizi WhatsApp üzerinden onayladıktan sonra ödeme detayları tarafımızca iletilecektir. Havale/EFT ile güvenli ödeme yapabilirsiniz.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">Kargo sÃ¼resi ne kadar? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">SipariÅŸleriniz onaylandÄ±ktan sonra 1-3 iÅŸ gÃ¼nÃ¼ iÃ§erisinde kargoya verilir. Kargo teslimat sÃ¼resi bulunduÄŸunuz bÃ¶lgeye gÃ¶re 1-3 iÅŸ gÃ¼nÃ¼ arasÄ±nda deÄŸiÅŸmektedir. Toplam teslimat sÃ¼resi ortalama 2-5 iÅŸ gÃ¼nÃ¼dÃ¼r.</div></div>
+                    <button class="faq-question">Kargo süresi ne kadar? <span class="material-icons-outlined">expand_more</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Siparişleriniz onaylandıktan sonra 1-3 iş günü içerisinde kargoya verilir. Kargo teslimat süresi bulunduğunuz bölgeye göre 1-3 iş günü arasında değişmektedir. Toplam teslimat süresi ortalama 2-5 iş günüdür.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">ÃœrÃ¼nleri iade edebilir miyim? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">Evet! ÃœrÃ¼nlerinizi teslim tarihinden itibaren 14 gÃ¼n iÃ§erisinde iade edebilirsiniz. DetaylÄ± bilgi iÃ§in Ä°ade & DeÄŸiÅŸim PolitikasÄ± sayfamÄ±zÄ± inceleyebilirsiniz.</div></div>
+                    <button class="faq-question">Ürünleri iade edebilir miyim? <span class="material-icons-outlined">expand_more</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Evet! Ürünlerinizi teslim tarihinden itibaren 14 gün içerisinde iade edebilirsiniz. Detaylı bilgi için İade ve Değişim Politikası sayfamızı inceleyebilirsiniz.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">Kargo Ã¼creti var mÄ±? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">Belirli tutar Ã¼zeri sipariÅŸlerde kargo Ã¼cretsizdir. Kargo Ã¼cretleri sipariÅŸ onayÄ± sÄ±rasÄ±nda WhatsApp Ã¼zerinden tarafÄ±nÄ±za bildirilecektir.</div></div>
+                    <button class="faq-question">Kargo ücreti var mı? <span class="material-icons-outlined">expand_more</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Belirli tutar üzeri siparişlerde kargo ücretsizdir. Kargo ücretleri sipariş onayı sırasında WhatsApp üzerinden tarafınıza bildirilecektir.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">ÃœrÃ¼nler orijinal mi? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">Evet, maÄŸazamÄ±zdaki tÃ¼m Ã¼rÃ¼nler orijinal ve kalite kontrol sÃ¼recinden geÃ§miÅŸtir. ÃœrÃ¼nlerimizin kalitesinden emin olabilirsiniz.</div></div>
+                    <button class="faq-question">Ürünler orijinal mi? <span class="material-icons-outlined">expand_more</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Evet, mağazamızdaki tüm ürünler orijinal ve kalite kontrol sürecinden geçmiştir. Ürünlerimizin kalitesinden emin olabilirsiniz.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
-                    <button class="faq-question">SipariÅŸ takibi nasÄ±l yapÄ±lÄ±r? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">SipariÅŸiniz kargoya verildikten sonra kargo takip numarasÄ± WhatsApp Ã¼zerinden tarafÄ±nÄ±za iletilecektir. Bu numara ile kargo firmasÄ±nÄ±n sitesinden sipariÅŸinizi takip edebilirsiniz.</div></div>
+                    <button class="faq-question">Sipariş takibi nasıl yapılır? <span class="material-icons-outlined">expand_more</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Siparişiniz kargoya verildikten sonra kargo takip numarası WhatsApp üzerinden tarafınıza iletilecektir. Bu numara ile kargo firmasının sitesinden siparişinizi takip edebilirsiniz.</div></div>
                 </div>
             </div>
         </section>
@@ -393,60 +394,60 @@
             <div class="footer-grid" style="grid-template-columns: 2fr 1fr 1fr 1fr;">
                 <div class="footer-col">
                     <h4><span class="logo-rota">Rota</span><span class="logo-gmc">GMC</span></h4>
-                    <p>Telefon ve araba aksesuarlarÄ±nda en kaliteli Ã¼rÃ¼nler, en uygun fiyatlarla RotaGMC'de.</p>
+                    <p>Telefon ve araba aksesuarlarında en kaliteli ürünler, en uygun fiyatlarla RotaGMC'de.</p>
                 </div>
                 <div class="footer-col">
-                    <h4>HÄ±zlÄ± Linkler</h4>
+                    <h4>Hızlı Linkler</h4>
                     <a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a>
-                    <a href="javascript:void(0)" onclick="navigate('category', 'telefon')">Telefon AksesuarlarÄ±</a>
-                    <a href="javascript:void(0)" onclick="navigate('category', 'araba')">Araba AksesuarlarÄ±</a>
+                    <a href="javascript:void(0)" onclick="navigate('category', 'telefon')">Telefon Aksesuarları</a>
+                    <a href="javascript:void(0)" onclick="navigate('category', 'araba')">Araba Aksesuarları</a>
                 </div>
                 <div class="footer-col">
                     <h4>Bilgi</h4>
-                    <a href="javascript:void(0)" onclick="navigate('about')">HakkÄ±mÄ±zda</a>
-                    <a href="javascript:void(0)" onclick="navigate('return')">Ä°ade & DeÄŸiÅŸim</a>
-                    <a href="javascript:void(0)" onclick="navigate('privacy')">Gizlilik PolitikasÄ±</a>
-                    <a href="javascript:void(0)" onclick="navigate('faq')">SÄ±kÃ§a Sorulan Sorular</a>
+                    <a href="javascript:void(0)" onclick="navigate('about')">Hakkımızda</a>
+                    <a href="javascript:void(0)" onclick="navigate('return')">İade &amp; Değişim</a>
+                    <a href="javascript:void(0)" onclick="navigate('privacy')">Gizlilik Politikası</a>
+                    <a href="javascript:void(0)" onclick="navigate('faq')">Sıkça Sorulan Sorular</a>
                 </div>
                 <div class="footer-col">
-                    <h4>Ä°letiÅŸim</h4>
+                    <h4>İletişim</h4>
                     <p><span class="material-icons-outlined">phone</span> +90 5330912450</p>
                     <p><span class="material-icons-outlined">email</span> info@rotagmc.com</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 RotaGMC - TÃ¼m haklarÄ± saklÄ±dÄ±r.</p>
+                <p>&copy; 2026 RotaGMC - Tüm hakları saklıdır.</p>
             </div>
         </div>
     </footer>
 
-    <!-- MOBÄ°L ALT MENÃœ -->
+    <!-- MOBİL ALT MENÜ -->
     <nav class="mobile-bottom-nav">
         <div class="mobile-bottom-nav-inner">
-            <a href="#" class="mobile-nav-item active" id="mobNavHome" onclick="navigate('home')">
+            <a href="javascript:void(0)" class="mobile-nav-item active" id="mobNavHome" onclick="navigate('home')">
                 <span class="material-icons-outlined">home</span>
                 Ana Sayfa
             </a>
-            <a href="#" class="mobile-nav-item" id="mobNavCategory" onclick="navigate('category', 'tumu')">
+            <a href="javascript:void(0)" class="mobile-nav-item" id="mobNavCategory" onclick="navigate('category', 'tumu')">
                 <span class="material-icons-outlined">category</span>
                 Kategoriler
             </a>
-            <a href="#" class="mobile-nav-item" id="mobNavCart" onclick="navigate('cart')">
+            <a href="javascript:void(0)" class="mobile-nav-item" id="mobNavCart" onclick="navigate('cart')">
                 <span class="material-icons-outlined">shopping_cart</span>
                 <span class="nav-badge" id="mobCartCount">0</span>
                 Sepet
             </a>
-            <a href="#" class="mobile-nav-item" id="mobNavFaq" onclick="navigate('faq')">
+            <a href="javascript:void(0)" class="mobile-nav-item" id="mobNavFaq" onclick="navigate('faq')">
                 <span class="material-icons-outlined">help_outline</span>
                 SSS
             </a>
         </div>
     </nav>
 
-    <!-- TOAST BÄ°LDÄ°RÄ°M -->
+    <!-- TOAST BİLDİRİM -->
     <div class="toast" id="toast">
         <span class="material-icons-outlined">check_circle</span>
-        <span id="toastMessage">ÃœrÃ¼n sepete eklendi!</span>
+        <span id="toastMessage">Ürün sepete eklendi!</span>
     </div>
 
     <script src="js/locations.js"></script>
