@@ -236,3 +236,41 @@ products.forEach(p => {
         p.reviewCount = productRatings[p.id].reviewCount;
     }
 });
+
+
+// =============================================
+// ÜRÜN STOKLARI
+// =============================================
+const productStocks = {
+    1: 50, 2: 30, 3: 100, 4: 25, 5: 80,
+    6: 60, 7: 20, 8: 35, 9: 45, 10: 70,
+    11: 15, 12: 40, 13: 55, 14: 90, 15: 65, 16: 10
+};
+
+products.forEach(p => {
+    if (productStocks[p.id]) {
+        p.stock = productStocks[p.id];
+    }
+});
+
+
+// =============================================
+// ÜRÜN GALERİ VERİLERİ
+// =============================================
+// Her ürüne birden fazla fotoğraf ve opsiyonel video ekleyebilirsiniz.
+// images: ["images/urun1-1.jpg", "images/urun1-2.jpg", "images/urun1-3.jpg"]
+// video: "images/urun1-video.mp4"  (opsiyonel, yoksa sadece fotoğraflar gösterilir)
+// =============================================
+
+// Örnek: Ürünlere ek görseller tanımlayın
+// Şimdilik her ürün kendi ana görselini kullanır.
+// İstediğiniz ürüne birden fazla görsel eklemek için:
+// products.find(p => p.id === 1).images = ["images/kilif-1.jpg", "images/kilif-2.jpg", "images/kilif-3.jpg"];
+// products.find(p => p.id === 1).video = "images/kilif-video.mp4";
+
+// Otomatik olarak ana görseli images dizisine ekle (eğer yoksa)
+products.forEach(p => {
+    if (!p.images) {
+        p.images = [p.image];
+    }
+});

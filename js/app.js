@@ -19,6 +19,7 @@ function initApp() {
     loadNewProducts();
     initSlider();
     updateCartCount();
+    updateCategoryCounts();
     initMobileMenu();
     initSearch();
 
@@ -112,23 +113,45 @@ function showPage(page, param) {
 
 // ===== SLIDER =====
 function initSlider() {
+    // Slider ürünleri: featured + stok tükenen + indirimli
+    const lowStock = products.filter(p => p.stock && p.stock <= 5 && !p.featured);
+    const deals = products.filter(p => p.oldPrice && !p.featured && !(p.stock && p.stock <= 5));
     const featured = products.filter(p => p.featured);
+
+    const sliderProducts = [];
+
+    // Stok tükenenleri ekle
+    lowStock.forEach(p => {
+        sliderProducts.push({ ...p, sliderBadge: '🔥 Stok Tükeniyor!' });
+    });
+
+    // Fırsat ürünlerini ekle
+    deals.forEach(p => {
+        const discount = Math.round((1 - p.price / p.oldPrice) * 100);
+        sliderProducts.push({ ...p, sliderBadge: `🏷️ Fırsat! %${discount} İndirim` });
+    });
+
+    // Featured ürünleri ekle
+    featured.forEach(p => {
+        sliderProducts.push({ ...p, sliderBadge: p.badge || 'Öne Çıkan' });
+    });
+
     const track = document.getElementById('sliderTrack');
     const dots = document.getElementById('sliderDots');
 
     track.innerHTML = '';
     dots.innerHTML = '';
 
-    featured.forEach((product, index) => {
-        // Slide
+    sliderProducts.forEach((product, index) => {
         const slide = document.createElement('div');
         slide.className = 'slider-slide';
         slide.innerHTML = `
             <div class="slider-content">
-                ${product.badge ? `<span class="slider-badge">${product.badge}</span>` : ''}
+                <span class="slider-badge">${product.sliderBadge}</span>
                 <h2>${product.name}</h2>
                 <p>${product.description.substring(0, 100)}...</p>
-                <a href="#" class="slider-cta" onclick="navigate('product', ${product.id})">
+                ${product.oldPrice ? `<p style="font-size:14px;opacity:0.9"><del style="opacity:0.6">${formatPrice(product.oldPrice)}</del> → <strong style="font-size:18px">${formatPrice(product.price)}</strong></p>` : ''}
+                <a href="javascript:void(0)" class="slider-cta" onclick="navigate('product', ${product.id})">
                     Ürünü İncele
                     <span class="material-icons-outlined">arrow_forward</span>
                 </a>
@@ -139,15 +162,20 @@ function initSlider() {
         `;
         track.appendChild(slide);
 
-        // Dot
         const dot = document.createElement('div');
         dot.className = `slider-dot ${index === 0 ? 'active' : ''}`;
         dot.onclick = () => goToSlide(index);
         dots.appendChild(dot);
     });
 
-    // Otomatik kayma
     startSlideInterval();
+}
+
+function getSliderProducts() {
+    const lowStock = products.filter(p => p.stock && p.stock <= 5 && !p.featured);
+    const deals = products.filter(p => p.oldPrice && !p.featured && !(p.stock && p.stock <= 5));
+    const featured = products.filter(p => p.featured);
+    return [...lowStock, ...deals, ...featured];
 }
 
 function startSlideInterval() {
@@ -156,11 +184,11 @@ function startSlideInterval() {
 }
 
 function slideHero(direction) {
-    const featured = products.filter(p => p.featured);
+    const sliderProducts = getSliderProducts();
     currentSlide += direction;
 
-    if (currentSlide >= featured.length) currentSlide = 0;
-    if (currentSlide < 0) currentSlide = featured.length - 1;
+    if (currentSlide >= sliderProducts.length) currentSlide = 0;
+    if (currentSlide < 0) currentSlide = sliderProducts.length - 1;
 
     updateSlider();
     startSlideInterval();
@@ -188,6 +216,7 @@ function createProductCard(product) {
             <div class="product-card-image">
                 <img src="${product.image}" alt="${product.name}" loading="lazy">
                 ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                ${product.stock && product.stock <= 5 ? `<span class="stock-warning"><span class="material-icons-outlined">warning</span> Stok Tükeniyor!</span>` : ''}
             </div>
             <div class="product-card-body">
                 <span class="product-card-category">${product.category === 'telefon' ? 'Telefon Aksesuarı' : 'Araba Aksesuarı'}</span>
@@ -203,10 +232,12 @@ function createProductCard(product) {
                 </div>` : ''}
             </div>
             <div class="product-card-actions" onclick="event.stopPropagation()">
-                <button class="btn-add-cart" onclick="addToCart(${product.id}); event.stopPropagation();">
-                    <span class="material-icons-outlined" style="font-size:18px">add_shopping_cart</span>
-                    Sepete Ekle
-                </button>
+                <div id="cartAction_${product.id}" class="cart-action-wrapper" style="flex:1;display:flex;">
+                    <button class="btn-add-cart" onclick="onAddToCartClick(${product.id}); event.stopPropagation();" id="addBtn_${product.id}">
+                        <span class="material-icons-outlined" style="font-size:18px">add_shopping_cart</span>
+                        Sepete Ekle
+                    </button>
+                </div>
                 <button class="btn-buy-now" onclick="buyNow(${product.id}); event.stopPropagation();">
                     Satın Al
                 </button>
@@ -280,6 +311,8 @@ function applySorting() {
 }
 
 // ===== ÜRÜN DETAY =====
+let gallerySlide = 0;
+
 function loadProductDetail(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) {
@@ -288,24 +321,62 @@ function loadProductDetail(productId) {
     }
 
     productQuantity = 1;
+    gallerySlide = 0;
 
     const breadcrumb = document.getElementById('productBreadcrumb');
     const catName = product.category === 'telefon' ? 'Telefon Aksesuarları' : 'Araba Aksesuarları';
     breadcrumb.innerHTML = `
-        <a href="#" onclick="navigate('home')">Ana Sayfa</a>
+        <a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a>
         <span class="separator">/</span>
-        <a href="#" onclick="navigate('category', '${product.category}')">${catName}</a>
+        <a href="javascript:void(0)" onclick="navigate('category', '${product.category}')">${catName}</a>
         <span class="separator">/</span>
         <span class="current">${product.name}</span>
     `;
 
     const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
+    const galleryItems = [];
+    const maxStock = product.stock || 99;
+
+    // Video varsa ilk sıraya ekle
+    if (product.video) {
+        galleryItems.push({ type: 'video', src: product.video });
+    }
+    // Görselleri ekle
+    (product.images || [product.image]).forEach(img => {
+        galleryItems.push({ type: 'image', src: img });
+    });
+
+    const galleryHTML = galleryItems.map((item, i) => {
+        if (item.type === 'video') {
+            return `<div class="gallery-slide"><video src="${item.src}" controls playsinline preload="metadata"></video></div>`;
+        }
+        return `<div class="gallery-slide"><img src="${item.src}" alt="${product.name}"></div>`;
+    }).join('');
+
+    const dotsHTML = galleryItems.map((item, i) =>
+        `<button class="gallery-dot ${i === 0 ? 'active' : ''} ${item.type === 'video' ? 'video-dot' : ''}" onclick="goToGallerySlide(${i})"></button>`
+    ).join('');
+
+    const thumbsHTML = galleryItems.map((item, i) => {
+        if (item.type === 'video') {
+            return `<div class="gallery-thumb video-thumb ${i === 0 ? 'active' : ''}" onclick="goToGallerySlide(${i})"><img src="${(product.images || [product.image])[0]}" alt="Video"></div>`;
+        }
+        return `<div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="goToGallerySlide(${i})"><img src="${item.src}" alt="${product.name}"></div>`;
+    }).join('');
 
     document.getElementById('productDetail').innerHTML = `
         <div class="product-gallery">
-            <div class="product-main-image">
-                <img src="${product.image}" alt="${product.name}">
+            <div class="gallery-slider" id="gallerySlider">
+                <div class="gallery-track" id="galleryTrack">
+                    ${galleryHTML}
+                </div>
+                ${galleryItems.length > 1 ? `
+                <button class="gallery-btn gallery-prev" onclick="slideGallery(-1)"><span class="material-icons-outlined">chevron_left</span></button>
+                <button class="gallery-btn gallery-next" onclick="slideGallery(1)"><span class="material-icons-outlined">chevron_right</span></button>
+                <div class="gallery-dots">${dotsHTML}</div>
+                ` : ''}
             </div>
+            ${galleryItems.length > 1 ? `<div class="gallery-thumbs">${thumbsHTML}</div>` : ''}
         </div>
         <div class="product-info">
             <span class="product-category-tag">${catName}</span>
@@ -318,23 +389,13 @@ function loadProductDetail(productId) {
             <div class="product-price-section">
                 <span class="current-price">${formatPrice(product.price)}</span>
                 ${product.oldPrice ? `<span class="old-price">${formatPrice(product.oldPrice)}</span>` : ''}
-                ${discount > 0 ? `<span class="product-badge" style="position:static">%${discount} İndirim</span>` : ''}
+                ${discount > 0 ? `<span class="product-badge" style="position:static">${discount} İndirim</span>` : ''}
             </div>
-            <p class="product-desc">${product.description}</p>
-            ${product.features ? `
-                <ul class="product-features">
-                    ${product.features.map(f => `
-                        <li>
-                            <span class="material-icons-outlined">check_circle</span>
-                            ${f}
-                        </li>
-                    `).join('')}
-                </ul>
-            ` : ''}
+            ${product.stock && product.stock <= 5 ? `<p style="color:var(--accent);font-weight:600;font-size:13px;display:flex;align-items:center;gap:4px;"><span class="material-icons-outlined" style="font-size:16px">warning</span> Son ${product.stock} adet kaldı!</p>` : ''}
             <div class="quantity-selector">
                 <button class="qty-btn" onclick="changeQuantity(-1)">−</button>
                 <span class="qty-value" id="qtyValue">1</span>
-                <button class="qty-btn" onclick="changeQuantity(1)">+</button>
+                <button class="qty-btn" onclick="changeQuantity(1, ${maxStock})">+</button>
             </div>
             <div class="product-detail-actions">
                 <button class="btn-add-cart" onclick="addToCart(${product.id}, productQuantity)">
@@ -345,13 +406,85 @@ function loadProductDetail(productId) {
                     Hemen Satın Al
                 </button>
             </div>
+            <div class="product-desc-section">
+                <h3>Ürün Açıklaması</h3>
+                <p class="product-desc">${product.description}</p>
+                ${product.features ? `
+                    <ul class="product-features">
+                        ${product.features.map(f => `
+                            <li>
+                                <span class="material-icons-outlined">check_circle</span>
+                                ${f}
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : ''}
+            </div>
         </div>
     `;
+
+    // Galeri swipe desteği
+    initGallerySwipe();
 }
 
-function changeQuantity(delta) {
-    productQuantity = Math.max(1, productQuantity + delta);
+function changeQuantity(delta, maxStock) {
+    const max = maxStock || 99;
+    productQuantity = Math.max(1, Math.min(max, productQuantity + delta));
     document.getElementById('qtyValue').textContent = productQuantity;
+    if (productQuantity >= max) {
+        showToast(`Bu üründen en fazla ${max} adet ekleyebilirsiniz.`);
+    }
+}
+
+// Galeri Slider fonksiyonları
+function slideGallery(direction) {
+    const track = document.getElementById('galleryTrack');
+    if (!track) return;
+    const totalSlides = track.children.length;
+    gallerySlide += direction;
+    if (gallerySlide >= totalSlides) gallerySlide = 0;
+    if (gallerySlide < 0) gallerySlide = totalSlides - 1;
+    updateGallery();
+}
+
+function goToGallerySlide(index) {
+    gallerySlide = index;
+    updateGallery();
+}
+
+function updateGallery() {
+    const track = document.getElementById('galleryTrack');
+    if (!track) return;
+    track.style.transform = `translateX(-${gallerySlide * 100}%)`;
+
+    document.querySelectorAll('.gallery-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === gallerySlide);
+    });
+    document.querySelectorAll('.gallery-thumb').forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === gallerySlide);
+    });
+}
+
+function initGallerySwipe() {
+    const slider = document.getElementById('gallerySlider');
+    if (!slider) return;
+    let startX = 0;
+    let diff = 0;
+
+    slider.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    slider.addEventListener('touchmove', (e) => {
+        diff = e.touches[0].clientX - startX;
+    }, { passive: true });
+
+    slider.addEventListener('touchend', () => {
+        if (Math.abs(diff) > 50) {
+            slideGallery(diff > 0 ? -1 : 1);
+        }
+        diff = 0;
+    });
 }
 
 // ===== SEPET YÖNETİMİ =====
@@ -374,6 +507,49 @@ function updateCartCount() {
     if (mobCount) {
         mobCount.textContent = total;
         mobCount.style.display = total > 0 ? 'flex' : 'none';
+    }
+    // Kargo progress bar güncelle
+    updateKargoBar();
+}
+
+const KARGO_FREE_LIMIT = 1500;
+const KARGO_UCRETI = 100;
+
+function getCartTotal() {
+    const cart = getCart();
+    let total = 0;
+    cart.forEach(item => {
+        const product = products.find(p => p.id === item.productId);
+        if (product) total += product.price * item.quantity;
+    });
+    return total;
+}
+
+function updateKargoBar() {
+    const total = getCartTotal();
+    const bar = document.getElementById('kargoBar');
+    const progress = document.getElementById('kargoProgress');
+    const text = document.getElementById('kargoText');
+
+    if (!bar || !progress || !text) return;
+
+    if (total <= 0) {
+        progress.style.width = '0%';
+        text.innerHTML = '🚚 <strong>1.500 ₺</strong> ve üzeri siparişlerde <strong>kargo ücretsiz!</strong>';
+        bar.classList.remove('kargo-free');
+        return;
+    }
+
+    const pct = Math.min(100, (total / KARGO_FREE_LIMIT) * 100);
+    progress.style.width = pct + '%';
+
+    if (total >= KARGO_FREE_LIMIT) {
+        text.innerHTML = '✅ Tebrikler! <strong>Kargo ücretsiz!</strong>';
+        bar.classList.add('kargo-free');
+    } else {
+        const kalan = KARGO_FREE_LIMIT - total;
+        text.innerHTML = `🚚 Ücretsiz kargoya <strong>${formatPrice(kalan)}</strong> kaldı!`;
+        bar.classList.remove('kargo-free');
     }
 }
 
@@ -465,17 +641,39 @@ function renderCart() {
         `;
     }).join('');
 
+    const kargoFree = totalPrice >= KARGO_FREE_LIMIT;
+    const kargoUcreti = kargoFree ? 0 : KARGO_UCRETI;
+    const genelToplam = totalPrice + kargoUcreti;
+    const kalanKargo = KARGO_FREE_LIMIT - totalPrice;
+
     container.innerHTML = `
         <div class="cart-items">${itemsHtml}</div>
+        ${!kargoFree && totalPrice > 0 ? `
+        <div class="cart-kargo-info needs-more">
+            <span class="material-icons-outlined">local_shipping</span>
+            Ücretsiz kargoya <strong>${formatPrice(kalanKargo)}</strong> kaldı!
+        </div>` : ''}
+        ${kargoFree ? `
+        <div class="cart-kargo-info">
+            <span class="material-icons-outlined">check_circle</span>
+            Tebrikler! Siparişinize <strong>ücretsiz kargo</strong> uygulandı.
+        </div>` : ''}
         <div class="cart-summary">
             <div class="cart-summary-row">
-                <span>Ürün Sayısı</span>
-                <span>${cart.reduce((s, i) => s + i.quantity, 0)} adet</span>
-            </div>
-            <div class="cart-summary-row total">
-                <span>Toplam</span>
+                <span>Ürünler (${cart.reduce((s, i) => s + i.quantity, 0)} adet)</span>
                 <span>${formatPrice(totalPrice)}</span>
             </div>
+            <div class="cart-summary-row kargo">
+                <span>Kargo</span>
+                <span>${kargoFree ? '<span class="kargo-free-tag">Ücretsiz</span>' : formatPrice(KARGO_UCRETI)}</span>
+            </div>
+            <div class="cart-summary-divider"></div>
+            <div class="cart-summary-row total">
+                <span>Toplam</span>
+                <span>${formatPrice(genelToplam)}</span>
+            </div>
+            <div class="cart-summary-note">Fiyatlara KDV dahildir.</div>
+            <div class="cart-summary-note" style="margin-top:4px;color:#2e7d32;font-size:12px;">🎁 Tüm siparişleriniz darbelere korumalı özel kutusunda gönderilir.</div>
             <div class="cart-actions">
                 <button class="btn-continue-shopping" onclick="navigate('home')">Alışverişe Devam</button>
                 <button class="btn-checkout" onclick="navigate('checkout')">Siparişi Tamamla</button>
@@ -511,7 +709,26 @@ function renderCheckout() {
         `;
     }).join('');
 
-    document.getElementById('checkoutTotal').textContent = formatPrice(total);
+    const kargoFree = total >= KARGO_FREE_LIMIT;
+    const kargo = kargoFree ? 0 : KARGO_UCRETI;
+    const genelToplam = total + kargo;
+
+    // Kargo satırı ekle
+    checkoutItems.innerHTML += `
+        <div class="checkout-item" style="border-top:1px solid var(--gray-200);padding-top:10px;margin-top:6px;">
+            <span class="checkout-item-name">Kargo</span>
+            <span class="checkout-item-qty"></span>
+            <span class="checkout-item-price" style="${kargoFree ? 'color:#4caf50;' : ''}">${kargoFree ? 'Ücretsiz' : formatPrice(KARGO_UCRETI)}</span>
+        </div>
+    `;
+
+    document.getElementById('checkoutTotal').textContent = formatPrice(genelToplam);
+
+    // KDV notu
+    const totalEl = document.getElementById('checkoutTotal').parentElement;
+    if (totalEl && !document.getElementById('checkoutKdvNote')) {
+        totalEl.insertAdjacentHTML('afterend', '<p id="checkoutKdvNote" style="text-align:center;font-size:11px;color:#9e9e9e;margin-top:6px;">Fiyatlara KDV ve kargo dahildir.</p>');
+    }
 
     // İl listesini yükle
     loadProvinces();
@@ -590,10 +807,11 @@ function sendWhatsApp() {
         return;
     }
 
-    // Mesaj oluştur
-    let message = '🛒 *YENİ SİPARİŞ - RotaGMC*\n';
-    message += '━━━━━━━━━━━━━━━━━━\n\n';
-    message += '📦 *Sipariş Detayları:*\n';
+    // Mesaj oluştur - temiz format
+    let lines = [];
+    lines.push('--- YENI SIPARIS - RotaGMC ---');
+    lines.push('');
+    lines.push('SIPARIS DETAYLARI:');
 
     let total = 0;
     cart.forEach(cartItem => {
@@ -601,19 +819,28 @@ function sendWhatsApp() {
         if (product) {
             const itemTotal = product.price * cartItem.quantity;
             total += itemTotal;
-            message += `• ${product.name} x${cartItem.quantity} - ${formatPrice(itemTotal)}\n`;
+            lines.push('- ' + product.name + ' x' + cartItem.quantity + ' = ' + formatPrice(itemTotal));
         }
     });
 
-    message += `\n💰 *Toplam Tutar: ${formatPrice(total)}*\n\n`;
-    message += '👤 *Müşteri Bilgileri:*\n';
-    message += `• İsim: ${firstName} ${lastName}\n`;
-    message += `• Telefon: ${phone}\n\n`;
-    message += '📍 *Teslimat Adresi:*\n';
-    message += `• ${province} / ${district} / ${neighborhood}\n`;
-    message += `• ${addressDetail}\n\n`;
-    message += '━━━━━━━━━━━━━━━━━━\n';
-    message += '📱 RotaGMC Web Sitesi üzerinden gönderilmiştir.';
+    const kargoFree = total >= KARGO_FREE_LIMIT;
+    const kargo = kargoFree ? 0 : KARGO_UCRETI;
+    lines.push('');
+    lines.push('Urun Toplami: ' + formatPrice(total));
+    lines.push('Kargo: ' + (kargoFree ? 'Ucretsiz' : formatPrice(KARGO_UCRETI)));
+    lines.push('GENEL TOPLAM: ' + formatPrice(total + kargo));
+    lines.push('');
+    lines.push('MUSTERI BILGILERI:');
+    lines.push('Isim: ' + firstName + ' ' + lastName);
+    lines.push('Telefon: ' + phone);
+    lines.push('');
+    lines.push('TESLIMAT ADRESI:');
+    lines.push(province + ' / ' + district + ' / ' + neighborhood);
+    lines.push(addressDetail);
+    lines.push('');
+    lines.push('--- RotaGMC Web Sitesi ---');
+
+    const message = lines.join('\n');
 
     // WhatsApp linkini oluştur
     const encodedMessage = encodeURIComponent(message);
@@ -802,5 +1029,325 @@ function updateMobileNav(page) {
     if (navId) {
         const el = document.getElementById(navId);
         if (el) el.classList.add('active');
+    }
+}
+
+// ===== SEPETE EKLE - INLINE MİKTAR SEÇİCİ =====
+function onAddToCartClick(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    // Sepete 1 adet ekle
+    addToCart(productId, 1);
+
+    // Butonu miktar seçiciye dönüştür
+    const wrapper = document.getElementById(`cartAction_${productId}`);
+    if (!wrapper) return;
+
+    const cart = getCart();
+    const cartItem = cart.find(i => i.productId === productId);
+    const currentQty = cartItem ? cartItem.quantity : 1;
+    const maxStock = product.stock || 99;
+
+    wrapper.innerHTML = `
+        <div class="inline-qty-selector">
+            <button class="iq-btn" onclick="inlineQtyChange(${productId}, -1); event.stopPropagation();">−</button>
+            <span class="iq-count" id="iqCount_${productId}">${currentQty}</span>
+            <button class="iq-btn" onclick="inlineQtyChange(${productId}, 1); event.stopPropagation();">+</button>
+        </div>
+    `;
+}
+
+function inlineQtyChange(productId, delta) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    const cart = getCart();
+    const cartItem = cart.find(i => i.productId === productId);
+    if (!cartItem) return;
+
+    const maxStock = product.stock || 99;
+    const newQty = cartItem.quantity + delta;
+
+    if (newQty <= 0) {
+        // Sil ve butonu geri getir
+        removeFromCart(productId);
+        const wrapper = document.getElementById(`cartAction_${productId}`);
+        if (wrapper) {
+            wrapper.innerHTML = `
+                <button class="btn-add-cart" onclick="onAddToCartClick(${productId}); event.stopPropagation();" id="addBtn_${productId}">
+                    <span class="material-icons-outlined" style="font-size:18px">add_shopping_cart</span>
+                    Sepete Ekle
+                </button>
+            `;
+        }
+        return;
+    }
+
+    if (newQty > maxStock) {
+        showToast(`Bu üründen en fazla ${maxStock} adet ekleyebilirsiniz.`);
+        return;
+    }
+
+    cartItem.quantity = newQty;
+    saveCart(cart);
+
+    const countEl = document.getElementById(`iqCount_${productId}`);
+    if (countEl) {
+        countEl.textContent = newQty;
+        // Kısa animasyon
+        countEl.style.transform = 'scale(1.3)';
+        setTimeout(() => { countEl.style.transform = 'scale(1)'; }, 150);
+    }
+}
+
+
+// ===== KATEGORİ ÜRÜN SAYILARI =====
+function updateCategoryCounts() {
+    const telefonCount = products.filter(p => p.category === 'telefon').length;
+    const arabaCount = products.filter(p => p.category === 'araba').length;
+
+    const telEl = document.getElementById('catCountTelefon');
+    const arabaEl = document.getElementById('catCountAraba');
+
+    if (telEl) telEl.textContent = `${telefonCount} ürün`;
+    if (arabaEl) arabaEl.textContent = `${arabaCount} ürün`;
+}
+
+
+// ===== GMC DESTEK CHAT ASISTAN =====
+let chatOpen = false;
+let chatInited = false;
+
+function toggleChat() {
+    chatOpen = !chatOpen;
+    const widget = document.getElementById('chatWidget');
+    const badge = document.getElementById('chatFabBadge');
+
+    if (chatOpen) {
+        widget.classList.add('active');
+        if (badge) badge.style.display = 'none';
+        if (!chatInited) {
+            chatInited = true;
+            setTimeout(() => {
+                addBotMessage('Merhaba! 👋 Ben GMC Destek asistanıyım. Size nasıl yardımcı olabilirim?');
+                setTimeout(() => showQuickActions('main'), 400);
+            }, 300);
+        }
+        document.getElementById('chatInput').focus();
+    } else {
+        widget.classList.remove('active');
+    }
+}
+
+function addBotMessage(text) {
+    const body = document.getElementById('chatBody');
+    const msg = document.createElement('div');
+    msg.className = 'chat-msg';
+    msg.innerHTML = `
+        <img src="images/destek-icon.png" alt="GMC" class="chat-msg-avatar">
+        <div class="chat-msg-bubble">${text}</div>
+    `;
+    body.appendChild(msg);
+    body.scrollTop = body.scrollHeight;
+}
+
+function addUserMessage(text) {
+    const body = document.getElementById('chatBody');
+    const msg = document.createElement('div');
+    msg.className = 'chat-msg user';
+    msg.innerHTML = `<div class="chat-msg-bubble">${text}</div>`;
+    body.appendChild(msg);
+    body.scrollTop = body.scrollHeight;
+}
+
+function showQuickActions(type) {
+    const body = document.getElementById('chatBody');
+    const div = document.createElement('div');
+    div.className = 'chat-quick-actions';
+
+    const actions = {
+        main: [
+            ['📦 Sipariş Nasıl Verilir?', 'siparis'],
+            ['🔄 İade & Değişim', 'iade'],
+            ['🚚 Kargo Bilgisi', 'kargo'],
+            ['📱 Telefon Aksesuarları', 'telefon'],
+            ['🚗 Araba Aksesuarları', 'araba'],
+            ['🔒 Gizlilik Politikası', 'gizlilik'],
+            ['📞 İletişim', 'iletisim'],
+            ['❓ Sıkça Sorulan Sorular', 'sss']
+        ],
+        iade_menu: [
+            ['📋 İade Koşulları', 'iade_kosul'],
+            ['🔄 Değişim Süreci', 'degisim'],
+            ['⚠️ İade Edilemeyenler', 'iade_edilemez'],
+            ['📞 İade Başvurusu Yap', 'iade_basvuru'],
+            ['🔙 Ana Menü', 'menu']
+        ],
+        sss_menu: [
+            ['💳 Ödeme Nasıl Yapılır?', 'odeme'],
+            ['📦 Kargo Süresi Ne Kadar?', 'kargo'],
+            ['🔄 İade Edebilir miyim?', 'iade'],
+            ['✅ Ürünler Orijinal mi?', 'orijinal'],
+            ['📍 Sipariş Takibi', 'takip'],
+            ['🔙 Ana Menü', 'menu']
+        ],
+        back: [
+            ['🔙 Ana Menü', 'menu'],
+            ['📞 İletişim', 'iletisim']
+        ]
+    };
+
+    const btns = actions[type] || actions.main;
+    btns.forEach(([label, action]) => {
+        const btn = document.createElement('button');
+        btn.className = 'chat-quick-btn';
+        btn.textContent = label;
+        btn.onclick = () => handleQuickAction(action);
+        div.appendChild(btn);
+    });
+
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+}
+
+function handleQuickAction(action) {
+    const responses = {
+        siparis: {
+            msg: '📦 <strong>Sipariş vermek çok kolay!</strong><br><br>1️⃣ Beğendiğiniz ürünü <span class="chat-link" onclick="navigate(\'category\',\'tumu\');toggleChat()">ürünlerimiz</span> arasından seçin<br>2️⃣ "Sepete Ekle" butonuna tıklayın<br>3️⃣ Sepetinizi kontrol edip "Siparişi Tamamla" deyin<br>4️⃣ Bilgilerinizi doldurun<br>5️⃣ WhatsApp ile siparişinizi gönderin<br><br>Ekibimiz hemen sizinle iletişime geçecektir! 😊',
+            next: 'back'
+        },
+        iade: {
+            msg: '🔄 <strong>İade & Değişim hakkında bilgi almak isterseniz aşağıdan seçim yapabilirsiniz.</strong><br><br>Detaylı bilgi için <span class="chat-link" onclick="navigate(\'return\');toggleChat()">İade Politikası</span> sayfamızı da ziyaret edebilirsiniz.',
+            next: 'iade_menu'
+        },
+        iade_kosul: {
+            msg: '📋 <strong>İade Koşulları:</strong><br><br>✅ Teslim tarihinden itibaren <strong>7 iş günü</strong> içinde iade talebi<br>✅ Ürün kullanılmamış ve orijinal ambalajında olmalı<br>✅ Tüm etiket, bant ve aksesuarlar eksiksiz olmalı<br>✅ Fatura iade paketine eklenmeli<br>✅ Önce WhatsApp\'tan onay alınmalı<br>✅ İade kargo ücreti müşteriye aittir<br><br>Sorularınız için her zaman buradayız! 🤝',
+            next: 'back'
+        },
+        degisim: {
+            msg: '🔄 <strong>Değişim Süreci:</strong><br><br>1️⃣ WhatsApp üzerinden bize ulaşın<br>2️⃣ Değiştirmek istediğiniz ürünü belirtin<br>3️⃣ Yeni ürününüz <strong>3-5 iş günü</strong> içinde kapınızda!<br><br>Değişim kargo ücreti tarafımızca karşılanır. 📦',
+            next: 'back'
+        },
+        iade_edilemez: {
+            msg: '⚠️ <strong>İade Edilemeyen Ürünler:</strong><br><br>❌ Ambalajı açılmış hijyenik ürünler<br>❌ Kişiye özel üretilen ürünler<br>❌ Kullanım sonrası hasar görmüş ürünler<br><br>Bunun dışındaki tüm ürünlerimiz iade edilebilir! ✅',
+            next: 'back'
+        },
+        iade_basvuru: {
+            msg: '📞 <strong>İade başvurusu için:</strong><br><br>📱 <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" class="chat-link">WhatsApp ile yazın</a><br>📧 <a href="mailto:info@rotagmc.com" class="chat-link">info@rotagmc.com</a><br>📞 <a href="tel:+905330912450" class="chat-link">+90 533 091 24 50</a><br><br>Sipariş numaranız ve iade sebebinizle birlikte bize ulaşın. En kısa sürede dönüş yapacağız! ⚡',
+            next: 'back'
+        },
+        kargo: {
+            msg: '🚚 <strong>Kargo Bilgisi:</strong><br><br>📦 Siparişler <strong>1-3 iş günü</strong> içinde PTT Kargo ile kargoya verilir<br>🕐 Teslimat süresi: bölgenize göre <strong>1-4 iş günü</strong><br>💰 Kargo ücreti: sabit <strong>100 ₺</strong><br>🎉 <strong>1.500 ₺ ve üzeri</strong> siparişlerde <strong>kargo ücretsiz!</strong><br><br>Kargo takip numarası WhatsApp\'tan iletilir. 📱',
+            next: 'back'
+        },
+        telefon: {
+            msg: '📱 <strong>Telefon Aksesuarları</strong> kategorimizde birçok kaliteli ürün bulunuyor!<br><br>Kılıf, şarj cihazı, kablo, kulaklık, ekran koruyucu ve daha fazlası...<br><br>👉 <span class="chat-link" onclick="navigate(\'category\',\'telefon\');toggleChat()">Telefon Aksesuarlarına Göz At</span>',
+            next: 'back'
+        },
+        araba: {
+            msg: '🚗 <strong>Araba Aksesuarları</strong> kategorimizi keşfedin!<br><br>Telefon tutucusu, araç kokusu, organizer, LED aydınlatma ve daha fazlası...<br><br>👉 <span class="chat-link" onclick="navigate(\'category\',\'araba\');toggleChat()">Araba Aksesuarlarına Göz At</span>',
+            next: 'back'
+        },
+        gizlilik: {
+            msg: '🔒 <strong>Gizlilik ve Güvenlik:</strong><br><br>✅ Kişisel verileriniz üçüncü şahıslarla <strong>paylaşılmaz</strong><br>✅ Yalnızca sipariş işlemi için kullanılır<br>✅ Sepet bilgileri sadece sizin cihazınızda saklanır<br>✅ Ödeme bilgileri sitemizde tutulmaz<br><br>Detaylar için: <span class="chat-link" onclick="navigate(\'privacy\');toggleChat()">Gizlilik Politikası</span>',
+            next: 'back'
+        },
+        iletisim: {
+            msg: '📞 <strong>Bize Ulaşın:</strong><br><br>📱 <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" class="chat-link">WhatsApp ile Yazın</a><br>📧 <a href="mailto:info@rotagmc.com" class="chat-link">info@rotagmc.com</a><br>📞 <a href="tel:+905330912450" class="chat-link">+90 533 091 24 50</a><br><br>7/24 size yardımcı olmaktan mutluluk duyarız! 😊',
+            next: 'back'
+        },
+        sss: {
+            msg: '❓ <strong>Sıkça Sorulan Sorular</strong><br><br>Aşağıdan merak ettiğiniz konuyu seçebilirsiniz. Daha fazlası için <span class="chat-link" onclick="navigate(\'faq\');toggleChat()">SSS sayfamızı</span> ziyaret edin!',
+            next: 'sss_menu'
+        },
+        odeme: {
+            msg: '💳 <strong>Ödeme Bilgisi:</strong><br><br>Siparişinizi WhatsApp üzerinden onayladıktan sonra ödeme detayları tarafımızca iletilir.<br><br>✅ Havale/EFT ile güvenli ödeme<br>✅ Ödeme onayı sonrası hemen kargoya verilir<br><br>Güvenle alışveriş yapabilirsiniz! 🛡️',
+            next: 'back'
+        },
+        orijinal: {
+            msg: '✅ <strong>Evet, tüm ürünlerimiz orijinaldir!</strong><br><br>🏷️ Kalite kontrol sürecinden geçmiştir<br>📦 Orijinal ambalajında teslim edilir<br>🤝 Memnun kalmazsanız 14 gün iade hakkınız var<br><br>Güvenle alışveriş yapabilirsiniz! 💯',
+            next: 'back'
+        },
+        takip: {
+            msg: '📍 <strong>Sipariş Takibi:</strong><br><br>Siparişiniz kargoya verildikten sonra kargo takip numarası <strong>WhatsApp üzerinden</strong> tarafınıza iletilir.<br><br>Bu numara ile kargo firmasının sitesinden takip edebilirsiniz. 📦',
+            next: 'back'
+        },
+        menu: {
+            msg: 'Başka bir konuda yardımcı olabilir miyim? 😊',
+            next: 'main'
+        }
+    };
+
+    const resp = responses[action];
+    if (resp) {
+        setTimeout(() => {
+            addBotMessage(resp.msg);
+            if (resp.next) setTimeout(() => showQuickActions(resp.next), 300);
+        }, 400);
+    }
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    addUserMessage(text);
+    input.value = '';
+
+    // Anahtar kelime eşleştirme
+    const lower = text.toLowerCase();
+    let action = null;
+
+    if (/merhaba|selam|hey|sa |naber|günaydın|iyi günler|iyi akşamlar/.test(lower)) {
+        setTimeout(() => {
+            addBotMessage('Merhaba! 😊 Hoş geldiniz! Size nasıl yardımcı olabilirim?');
+            setTimeout(() => showQuickActions('main'), 300);
+        }, 500);
+        return;
+    } else if (/teşekkür|sağol|eyvallah|tşk/.test(lower)) {
+        setTimeout(() => {
+            addBotMessage('Rica ederim! 😊 Başka bir sorunuz olursa her zaman buradayım. İyi alışverişler! 🛍️');
+            setTimeout(() => showQuickActions('main'), 300);
+        }, 500);
+        return;
+    } else if (/sipariş|nasıl.*al|nasıl.*ver|satın/.test(lower)) {
+        action = 'siparis';
+    } else if (/iade|değişim|geri.*gönder|iade.*et/.test(lower)) {
+        action = 'iade';
+    } else if (/kargo|teslimat|gönderim|kaç.*gün/.test(lower)) {
+        action = 'kargo';
+    } else if (/telefon|kılıf|şarj|kulaklık|kablo/.test(lower)) {
+        action = 'telefon';
+    } else if (/araba|araç|oto|direksiyon|tutucu/.test(lower)) {
+        action = 'araba';
+    } else if (/gizlilik|güven|güvenilir|veri|kişisel/.test(lower)) {
+        action = 'gizlilik';
+    } else if (/iletişim|numara|telefon.*no|ulaş|whatsapp|mail|email/.test(lower)) {
+        action = 'iletisim';
+    } else if (/ödeme|havale|eft|nasıl.*öde/.test(lower)) {
+        action = 'odeme';
+    } else if (/orijinal|kalite|sahte|gerçek/.test(lower)) {
+        action = 'orijinal';
+    } else if (/takip|nerede|kargom/.test(lower)) {
+        action = 'takip';
+    } else if (/soru|sss|faq|yardım/.test(lower)) {
+        action = 'sss';
+    } else if (/fiyat|indirim|kampanya|ucuz/.test(lower)) {
+        setTimeout(() => {
+            addBotMessage('🏷️ En güncel fiyatlar ve indirimler için <span class="chat-link" onclick="navigate(\'category\',\'tumu\');toggleChat()">tüm ürünlerimize</span> göz atabilirsiniz! İndirimli ürünler ana sayfadaki slider\'da öne çıkarılmaktadır. 🎉');
+            setTimeout(() => showQuickActions('back'), 300);
+        }, 500);
+        return;
+    }
+
+    if (action) {
+        handleQuickAction(action);
+    } else {
+        setTimeout(() => {
+            addBotMessage('Anlıyorum 🤔 Size daha iyi yardımcı olabilmem için aşağıdaki seçeneklerden birini tercih edebilirsiniz. Ya da doğrudan <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" class="chat-link">WhatsApp ile bize yazabilirsiniz</a>!');
+            setTimeout(() => showQuickActions('main'), 300);
+        }, 500);
     }
 }

@@ -10,12 +10,22 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 </head>
 <body>
+    <!-- KARGO PROGRESS BAR -->
+    <div class="kargo-bar" id="kargoBar">
+        <div class="container kargo-bar-inner">
+            <span class="kargo-text" id="kargoText">🚚 <strong>1.500 ₺</strong> ve üzeri siparişlerde <strong>kargo ücretsiz!</strong></span>
+            <div class="kargo-progress-wrap">
+                <div class="kargo-progress" id="kargoProgress" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- HEADER -->
     <header class="header">
         <div class="header-top">
             <div class="container header-top-inner">
                 <span>Ücretsiz kargo fırsatları için takipte kalın!</span>
-                <span>Yardım & Destek</span>
+                <a href="javascript:void(0)" onclick="navigate('faq')" style="color:white;text-decoration:none;">Yardım & Destek</a>
             </div>
         </div>
         <div class="header-main">
@@ -24,6 +34,7 @@
                     <span class="material-icons-outlined">menu</span>
                 </button>
                 <a href="javascript:void(0)" class="logo" onclick="navigate('home')">
+                    <img src="images/logo.png" alt="RotaGMC" class="logo-img">
                     <span class="logo-rota">Rota</span><span class="logo-gmc">GMC</span>
                 </a>
                 <div class="search-bar" id="searchBar">
@@ -95,18 +106,22 @@
                 </div>
                 <div class="category-cards">
                     <div class="category-card" onclick="navigate('category', 'telefon')">
-                        <div class="category-icon">
-                            <span class="material-icons-outlined">smartphone</span>
+                        <img src="images/cat-telefon.png" alt="Telefon" class="category-card-img">
+                        <div class="category-card-content">
+                            <h3>Telefon Aksesuarları</h3>
+                            <span class="cat-count" id="catCountTelefon">0 ürün</span>
+                            <p>Kılıf, şarj, kablo ve daha fazlası</p>
                         </div>
-                        <h3>Telefon Aksesuarları</h3>
-                        <p>Kılıf, şarj, kablo ve daha fazlası</p>
+                        <span class="material-icons-outlined cat-arrow">chevron_right</span>
                     </div>
                     <div class="category-card" onclick="navigate('category', 'araba')">
-                        <div class="category-icon">
-                            <span class="material-icons-outlined">directions_car</span>
+                        <img src="images/cat-araba.png" alt="Araba" class="category-card-img">
+                        <div class="category-card-content">
+                            <h3>Araba Aksesuarları</h3>
+                            <span class="cat-count" id="catCountAraba">0 ürün</span>
+                            <p>Tutucu, koku, organizer ve daha fazlası</p>
                         </div>
-                        <h3>Araba Aksesuarları</h3>
-                        <p>Tutucu, koku, organizer ve daha fazlası</p>
+                        <span class="material-icons-outlined cat-arrow">chevron_right</span>
                     </div>
                 </div>
 
@@ -261,7 +276,7 @@
                         <li>Orijinal ve kaliteli ürünler</li>
                         <li>Uygun fiyat garantisi</li>
                         <li>Hızlı kargo ile teslimat</li>
-                        <li>14 gün koşulsuz iade hakkı</li>
+                        <li>7 iş günü içerisinde iade hakkı</li>
                         <li>WhatsApp üzerinden 7/24 müşteri desteği</li>
                         <li>Güvenli alışveriş deneyimi</li>
                     </ul>
@@ -279,36 +294,69 @@
             <div class="info-page">
                 <div class="breadcrumb"><a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">İade &amp; Değişim</span></div>
                 <h1>İade &amp; Değişim Politikası</h1>
-                <p class="page-subtitle">Müşteri memnuniyeti bizim için önceliktir.</p>
+                <p class="page-subtitle">Müşterilerimizin memnuniyeti bizim için çok değerlidir. Aşağıdaki koşullar çerçevesinde iade ve değişim işlemlerinizi gerçekleştirebilirsiniz.</p>
 
                 <div class="info-card">
                     <h2><span class="material-icons-outlined">refresh</span> İade Koşulları</h2>
-                    <p>Ürünlerimizi teslim aldığınız tarihten itibaren <strong>14 gün</strong> içerisinde koşulsuz olarak iade edebilirsiniz.</p>
+                    <p>Ürünlerinizi teslim aldığınız tarihten itibaren <strong>7 iş günü</strong> içerisinde iade talebinde bulunabilirsiniz. İade sürecinin sağlıklı ilerleyebilmesi için aşağıdaki koşulların eksiksiz karşılanması gerekmektedir:</p>
                     <ul>
-                        <li>Ürün kullanılmamış ve orijinal ambalajında olmalıdır</li>
-                        <li>Fatura ve irsaliye iade paketine eklenmelidir</li>
-                        <li>Ürün hasar görmemiş olmalıdır</li>
-                        <li>Kargo ücreti tarafımızca karşılanır</li>
+                        <li>Ürün <strong>hiç kullanılmamış, denenmemiş</strong> ve orijinal ambalajında olmalıdır</li>
+                        <li>Ürünün <strong>tüm etiketleri, koruyucu bantları ve aksesuarları</strong> eksiksiz bulunmalıdır</li>
+                        <li>Orijinal <strong>fatura veya e-fatura</strong> iade paketine eklenmelidir</li>
+                        <li>Ürün üzerinde herhangi bir <strong>çizik, kırık, hasar veya kullanım izi</strong> olmamalıdır</li>
+                        <li>İade talebi öncelikle <strong>WhatsApp üzerinden onaylatılmalıdır</strong>; onay alınmadan gönderilen iadeler kabul edilememektedir</li>
+                        <li>İade kargo ücreti <strong>müşteriye aittir</strong>; yalnızca hatalı/arızalı ürün gönderimlerinde kargo tarafımızca karşılanır</li>
                     </ul>
+                    <p style="margin-top:12px;font-size:13px;color:#757575;"><em>Not: Yukarıdaki koşullardan herhangi birinin karşılanmaması durumunda iade talebi değerlendirmeye alınamamaktadır. Anlayışınız için teşekkür ederiz. 🙏</em></p>
                 </div>
 
                 <div class="info-card">
                     <h2><span class="material-icons-outlined">swap_horiz</span> Değişim Süreci</h2>
-                    <p>Ürününüzü farklı bir ürünle değiştirmek isterseniz WhatsApp üzerinden bizimle iletişime geçmeniz yeterlidir. Değişim işlemi 3-5 iş günü içerisinde tamamlanır.</p>
-                </div>
-
-                <div class="info-card">
-                    <h2><span class="material-icons-outlined">warning_amber</span> İade Edilemeyen Ürünler</h2>
+                    <p>Ürününüzü farklı bir ürünle değiştirmek isterseniz, lütfen öncelikle WhatsApp üzerinden ekibimize ulaşın. Değişim talebinizin onaylanmasının ardından:</p>
                     <ul>
-                        <li>Hijyenik ürünler (ambalajı açılmışsa)</li>
-                        <li>Kişiye özel üretilen ürünler</li>
-                        <li>Kullanım sonrası hasar görmüş ürünler</li>
+                        <li>Ürünü orijinal ambalajıyla birlikte tarafımıza göndermeniz gerekmektedir</li>
+                        <li>Gönderilen ürün kontrol edildikten sonra yeni ürün <strong>3-5 iş günü</strong> içerisinde kargoya verilir</li>
+                        <li>Değişim işlemlerinde kargo ücreti müşteriye aittir</li>
+                        <li>Onaysız gönderilen değişim talepleri işleme alınamamaktadır</li>
                     </ul>
                 </div>
 
                 <div class="info-card">
+                    <h2><span class="material-icons-outlined">warning_amber</span> İade ve Değişim Yapılamayan Durumlar</h2>
+                    <p>Aşağıdaki durumlarda ne yazık ki iade veya değişim işlemi gerçekleştirilememektedir:</p>
+                    <ul>
+                        <li>Ambalajı açılmış veya kullanılmış hijyenik ürünler (kulaklık, koruyucu cam vb.)</li>
+                        <li>Kişiye özel üretilmiş veya özelleştirilmiş ürünler</li>
+                        <li>Kullanım sonrası oluşan fiziksel hasar, kırık veya çizik bulunan ürünler</li>
+                        <li>Eksik parça veya aksesuar ile gönderilen ürünler</li>
+                        <li>7 iş gününü aşmış iade talepleri</li>
+                        <li>Önceden WhatsApp onayı alınmadan gönderilen iadeler</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h2><span class="material-icons-outlined">local_shipping</span> Kargo ve Teslimat Bilgileri</h2>
+                    <p>Siparişleriniz, ödeme onayının ardından özenle hazırlanarak <strong>1-3 iş günü</strong> içerisinde <strong>PTT Kargo</strong> aracılığıyla kargoya teslim edilir.</p>
+                    <ul>
+                        <li>Teslimat süresi, bulunduğunuz bölgeye göre <strong>1-4 iş günü</strong> arasında değişmektedir</li>
+                        <li>Kargo ücreti sabit <strong>100 ₺</strong>'dir</li>
+                        <li><strong>1.500 ₺ ve üzeri</strong> siparişlerde kargo ücretsizdir</li>
+                        <li>Kargo takip numarası, ürününüz kargoya verildikten sonra WhatsApp üzerinden tarafınıza iletilir</li>
+                        <li>Resmi tatil ve bayram dönemlerinde teslimat süreleri uzayabilir</li>
+                    </ul>
+                    <p style="margin-top:12px;font-size:13px;color:#757575;"><em>Siparişinizin her aşamasında sizi bilgilendiriyoruz. Merak ettikleriniz için her zaman WhatsApp üzerinden bize ulaşabilirsiniz. 📱</em></p>
+                </div>
+
+                <div class="info-card">
                     <h2><span class="material-icons-outlined">phone_in_talk</span> İade Başvurusu</h2>
-                    <p>İade işlemi başlatmak için WhatsApp üzerinden sipariş numaranız ve iade sebebiniz ile birlikte bize ulaşın. Ekibimiz size en kısa sürede dönüş yapacaktır.</p>
+                    <p>İade işlemi başlatmak için lütfen aşağıdaki adımları izleyin:</p>
+                    <ul>
+                        <li><strong>1.</strong> WhatsApp üzerinden sipariş numaranız, iade etmek istediğiniz ürün ve iade sebebinizi belirtin</li>
+                        <li><strong>2.</strong> Ekibimizin onay vermesini bekleyin</li>
+                        <li><strong>3.</strong> Onay sonrası ürünü orijinal ambalajı ve faturasıyla birlikte PTT Kargo ile gönderin</li>
+                        <li><strong>4.</strong> Ürün tarafımıza ulaşıp kontrol edildikten sonra <strong>3-5 iş günü</strong> içerisinde iade tutarınız hesabınıza aktarılır</li>
+                    </ul>
+                    <p style="margin-top:12px;"><a href="https://wa.me/905330912450" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">📱 WhatsApp ile İade Başvurusu Yap</a></p>
                 </div>
             </div>
         </section>
@@ -362,17 +410,17 @@
 
                 <div class="faq-item" onclick="toggleFaq(this)">
                     <button class="faq-question">Kargo süresi ne kadar? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">Siparişleriniz onaylandıktan sonra 1-3 iş günü içerisinde kargoya verilir. Kargo teslimat süresi bulunduğunuz bölgeye göre 1-3 iş günü arasında değişmektedir. Toplam teslimat süresi ortalama 2-5 iş günüdür.</div></div>
+                    <div class="faq-answer"><div class="faq-answer-inner">Siparişleriniz, ödeme onayının ardından 1-3 iş günü içerisinde PTT Kargo aracılığıyla kargoya teslim edilir. Bulunduğunuz bölgeye göre teslimat süresi 1-4 iş günü arasında değişmektedir. Kargo takip numarası WhatsApp üzerinden tarafınıza iletilir.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
                     <button class="faq-question">Ürünleri iade edebilir miyim? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">Evet! Ürünlerinizi teslim tarihinden itibaren 14 gün içerisinde iade edebilirsiniz. Detaylı bilgi için İade ve Değişim Politikası sayfamızı inceleyebilirsiniz.</div></div>
+                    <div class="faq-answer"><div class="faq-answer-inner">Teslim tarihinden itibaren 7 iş günü içerisinde iade talebinde bulunabilirsiniz. Ürün kullanılmamış, orijinal ambalajında ve tüm aksesuarlarıyla birlikte olmalıdır. İade talebi önce WhatsApp üzerinden onaylatılmalıdır. Detaylı bilgi için İade ve Değişim Politikası sayfamızı inceleyebilirsiniz.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
                     <button class="faq-question">Kargo ücreti var mı? <span class="material-icons-outlined">expand_more</span></button>
-                    <div class="faq-answer"><div class="faq-answer-inner">Belirli tutar üzeri siparişlerde kargo ücretsizdir. Kargo ücretleri sipariş onayı sırasında WhatsApp üzerinden tarafınıza bildirilecektir.</div></div>
+                    <div class="faq-answer"><div class="faq-answer-inner">Kargo ücretimiz sabit 100 ₺'dir. 1.500 ₺ ve üzeri siparişlerde kargo tamamen ücretsizdir! Kargolarımız PTT Kargo aracılığıyla gönderilmektedir.</div></div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
@@ -393,6 +441,7 @@
         <div class="container">
             <div class="footer-grid" style="grid-template-columns: 2fr 1fr 1fr 1fr;">
                 <div class="footer-col">
+                    <img src="images/logo.png" alt="RotaGMC" class="footer-logo-img">
                     <h4><span class="logo-rota">Rota</span><span class="logo-gmc">GMC</span></h4>
                     <p>Telefon ve araba aksesuarlarında en kaliteli ürünler, en uygun fiyatlarla RotaGMC'de.</p>
                 </div>
@@ -411,8 +460,8 @@
                 </div>
                 <div class="footer-col">
                     <h4>İletişim</h4>
-                    <p><span class="material-icons-outlined">phone</span> +90 5330912450</p>
-                    <p><span class="material-icons-outlined">email</span> info@rotagmc.com</p>
+                    <p><a href="https://wa.me/905330912450" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;display:flex;align-items:center;gap:8px;"><span class="material-icons-outlined">phone</span> +90 533 091 24 50</a></p>
+                    <p><a href="mailto:info@rotagmc.com" style="color:rgba(255,255,255,0.7);text-decoration:none;display:flex;align-items:center;gap:8px;"><span class="material-icons-outlined">email</span> info@rotagmc.com</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -449,6 +498,29 @@
         <span class="material-icons-outlined">check_circle</span>
         <span id="toastMessage">Ürün sepete eklendi!</span>
     </div>
+
+    <!-- GMC DESTEK ASISTAN -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <img src="images/destek-icon.png" alt="GMC Destek" class="chat-avatar-header">
+                <div>
+                    <h4>GMC Destek</h4>
+                    <span class="chat-status">Çevrimiçi</span>
+                </div>
+            </div>
+            <button class="chat-close" onclick="toggleChat()"><span class="material-icons-outlined">close</span></button>
+        </div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Mesajınızı yazın..." autocomplete="off" onkeypress="if(event.key==='Enter')sendChatMessage()">
+            <button class="chat-send" onclick="sendChatMessage()"><span class="material-icons-outlined">send</span></button>
+        </div>
+    </div>
+    <button class="chat-fab" id="chatFab" onclick="toggleChat()">
+        <img src="images/destek-icon.png" alt="Destek" class="chat-fab-img">
+        <span class="chat-fab-badge" id="chatFabBadge">1</span>
+    </button>
 
     <script src="js/locations.js"></script>
     <script src="js/products.js"></script>
