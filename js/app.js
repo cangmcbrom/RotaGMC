@@ -109,6 +109,11 @@ function showPage(page, param) {
 
     // Mobil alt menü aktif durumu güncelle
     updateMobileNav(page);
+
+    // Sepet ile inline seçicileri senkronla
+    if (page === 'home' || page === 'category') {
+        setTimeout(() => syncAllInlineSelectors(), 50);
+    }
 }
 
 // ===== SLIDER =====
@@ -576,7 +581,45 @@ function removeFromCart(productId) {
     let cart = getCart();
     cart = cart.filter(item => item.productId !== productId);
     saveCart(cart);
+    resetInlineSelector(productId);
     renderCart();
+}
+
+// Sepetten silinen ürünün inline seçicisini sıfırla
+function resetInlineSelector(productId) {
+    const wrapper = document.getElementById(`cartAction_${productId}`);
+    if (wrapper && wrapper.querySelector('.inline-qty-selector')) {
+        wrapper.innerHTML = `
+            <button class="btn-add-cart" onclick="onAddToCartClick(${productId}); event.stopPropagation();" id="addBtn_${productId}">
+                <span class="material-icons-outlined" style="font-size:18px">add_shopping_cart</span>
+                Sepete Ekle
+            </button>
+        `;
+    }
+}
+
+// Sayfadaki tüm inline seçicileri sepet ile senkronla
+function syncAllInlineSelectors() {
+    const cart = getCart();
+    document.querySelectorAll('.cart-action-wrapper').forEach(wrapper => {
+        const id = wrapper.id.replace('cartAction_', '');
+        const productId = parseInt(id);
+        const cartItem = cart.find(i => i.productId === productId);
+
+        if (!cartItem && wrapper.querySelector('.inline-qty-selector')) {
+            // Sepette yok ama seçici açık - sıfırla
+            wrapper.innerHTML = `
+                <button class="btn-add-cart" onclick="onAddToCartClick(${productId}); event.stopPropagation();" id="addBtn_${productId}">
+                    <span class="material-icons-outlined" style="font-size:18px">add_shopping_cart</span>
+                    Sepete Ekle
+                </button>
+            `;
+        } else if (cartItem && wrapper.querySelector('.inline-qty-selector')) {
+            // Sepette var - sayıyı güncelle
+            const countEl = document.getElementById(`iqCount_${productId}`);
+            if (countEl) countEl.textContent = cartItem.quantity;
+        }
+    });
 }
 
 function updateCartItemQty(productId, delta) {
