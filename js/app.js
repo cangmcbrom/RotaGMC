@@ -1277,7 +1277,7 @@ function handleQuickAction(action) {
             next: 'back'
         },
         iade_basvuru: {
-            msg: '📞 <strong>İade başvurusu için:</strong><br><br>📱 <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" class="chat-link">WhatsApp ile yazın</a><br>📧 <a href="mailto:info@rotagmc.com" class="chat-link">info@rotagmc.com</a><br>📞 <a href="tel:+905330912450" class="chat-link">+90 533 091 24 50</a><br><br>Sipariş numaranız ve iade sebebinizle birlikte bize ulaşın. En kısa sürede dönüş yapacağız! ⚡',
+            msg: '📞 <strong>İade başvurusu için:</strong><br><br>📱 <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" class="chat-link">WhatsApp ile yazın</a><br>📧 <a href="mailto:rotagmcdestek@gmail.com" class="chat-link">rotagmcdestek@gmail.com</a><br>📞 <a href="tel:+905330912450" class="chat-link">+90 533 091 24 50</a><br><br>Sipariş numaranız ve iade sebebinizle birlikte bize ulaşın. En kısa sürede dönüş yapacağız! ⚡',
             next: 'back'
         },
         kargo: {
@@ -1297,7 +1297,7 @@ function handleQuickAction(action) {
             next: 'back'
         },
         iletisim: {
-            msg: '📞 <strong>Bize Ulaşın:</strong><br><br>📱 <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" class="chat-link">WhatsApp ile Yazın</a><br>📧 <a href="mailto:info@rotagmc.com" class="chat-link">info@rotagmc.com</a><br>📞 <a href="tel:+905330912450" class="chat-link">+90 533 091 24 50</a><br><br>7/24 size yardımcı olmaktan mutluluk duyarız! 😊',
+            msg: '📞 <strong>Bize Ulaşın:</strong><br><br>📱 <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" class="chat-link">WhatsApp ile Yazın</a><br>📧 <a href="mailto:rotagmcdestek@gmail.com" class="chat-link">rotagmcdestek@gmail.com</a><br><br>📸 <a href="https://www.instagram.com/rotagmc.tr/" target="_blank" class="chat-link">Instagram @rotagmc.tr</a><br>🎵 <a href="https://www.tiktok.com/@rotagmc.tr" target="_blank" class="chat-link">TikTok @rotagmc.tr</a><br><br>7/24 size yardımcı olmaktan mutluluk duyarız! 😊',
             next: 'back'
         },
         sss: {
