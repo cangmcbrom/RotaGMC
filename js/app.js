@@ -216,15 +216,43 @@ function updateSlider() {
 
 // ===== ÜRÜN KARTLARI =====
 function createProductCard(product) {
+    const isOutOfStock = product.stock !== undefined && product.stock <= 0;
+    const catLabel = product.category === 'telefon' ? 'Telefon Aksesuarı' : product.category === 'araba' ? 'Araba Aksesuarı' : product.category === 'giyim' ? 'Giyim' : 'Ürün';
+
+    let actionsHTML = '';
+    if (isOutOfStock) {
+        actionsHTML = `
+            <div class="product-card-actions" onclick="event.stopPropagation()">
+                <button class="btn-notify" onclick="notifyWhenAvailable(${product.id}); event.stopPropagation();" id="notifyBtn_${product.id}">
+                    <span class="material-icons-outlined">notifications_active</span>
+                    Gelince Haber Ver
+                </button>
+            </div>`;
+    } else {
+        actionsHTML = `
+            <div class="product-card-actions" onclick="event.stopPropagation()">
+                <div id="cartAction_${product.id}" class="cart-action-wrapper" style="flex:1;display:flex;">
+                    <button class="btn-add-cart" onclick="onAddToCartClick(${product.id}); event.stopPropagation();" id="addBtn_${product.id}">
+                        <span class="material-icons-outlined" style="font-size:18px">add_shopping_cart</span>
+                        Sepete Ekle
+                    </button>
+                </div>
+                <button class="btn-buy-now" onclick="buyNow(${product.id}); event.stopPropagation();">
+                    Satın Al
+                </button>
+            </div>`;
+    }
+
     return `
-        <div class="product-card" onclick="navigate('product', ${product.id})">
+        <div class="product-card ${isOutOfStock ? 'out-of-stock' : ''}" onclick="navigate('product', ${product.id})">
             <div class="product-card-image">
                 <img src="${product.image}" alt="${product.name}" loading="lazy">
-                ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
-                ${product.stock && product.stock <= 5 ? `<span class="stock-warning"><span class="material-icons-outlined">warning</span> Stok Tükeniyor!</span>` : ''}
+                ${product.badge && !isOutOfStock ? `<span class="product-badge">${product.badge}</span>` : ''}
+                ${!isOutOfStock && product.stock && product.stock <= 5 ? `<span class="stock-warning"><span class="material-icons-outlined">warning</span> Stok Tükeniyor!</span>` : ''}
+                ${isOutOfStock ? `<span class="out-of-stock-label">Stokta Kalmadı<br><small>Stok takibi için tıklayın</small></span>` : ''}
             </div>
             <div class="product-card-body">
-                <span class="product-card-category">${product.category === 'telefon' ? 'Telefon Aksesuarı' : 'Araba Aksesuarı'}</span>
+                <span class="product-card-category">${catLabel}</span>
                 <h3 class="product-card-title">${product.name}</h3>
                 <div class="product-card-price">
                     <span class="current-price">${formatPrice(product.price)}</span>
@@ -236,17 +264,7 @@ function createProductCard(product) {
                     <span class="rating-text">${product.rating} (${product.reviewCount})</span>
                 </div>` : ''}
             </div>
-            <div class="product-card-actions" onclick="event.stopPropagation()">
-                <div id="cartAction_${product.id}" class="cart-action-wrapper" style="flex:1;display:flex;">
-                    <button class="btn-add-cart" onclick="onAddToCartClick(${product.id}); event.stopPropagation();" id="addBtn_${product.id}">
-                        <span class="material-icons-outlined" style="font-size:18px">add_shopping_cart</span>
-                        Sepete Ekle
-                    </button>
-                </div>
-                <button class="btn-buy-now" onclick="buyNow(${product.id}); event.stopPropagation();">
-                    Satın Al
-                </button>
-            </div>
+            ${actionsHTML}
         </div>
     `;
 }
@@ -447,10 +465,15 @@ function loadProductDetail(productId) {
                 ${product.oldPrice ? `<span class="old-price" id="detailOldPrice">${formatPrice(product.oldPrice)}</span>` : ''}
                 ${discount > 0 ? `<span class="product-badge" style="position:static">${discount} İndirim</span>` : ''}
             </div>
-            ${product.stock && product.stock <= 5 ? `<p style="color:var(--accent);font-weight:600;font-size:13px;display:flex;align-items:center;gap:4px;"><span class="material-icons-outlined" style="font-size:16px">warning</span> Son ${product.stock} adet kaldı!</p>` : ''}
+            ${product.stock !== undefined && product.stock <= 0 ? `
+            <p style="color:var(--accent);font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;background:#fff3f3;padding:10px 14px;border-radius:8px;border:1px solid #ffcdd2;">
+                <span class="material-icons-outlined" style="font-size:20px">remove_shopping_cart</span> Bu ürün şu an stokta bulunmamaktadır
+            </p>` : ''}
+            ${product.stock && product.stock > 0 && product.stock <= 5 ? `<p style="color:var(--accent);font-weight:600;font-size:13px;display:flex;align-items:center;gap:4px;"><span class="material-icons-outlined" style="font-size:16px">warning</span> Son ${product.stock} adet kaldı!</p>` : ''}
             ${colorHTML}
             ${sizeHTML}
             ${bulkHTML}
+            ${product.stock === undefined || product.stock > 0 ? `
             <div class="quantity-selector">
                 <button class="qty-btn" onclick="changeQuantity(-1)">−</button>
                 <span class="qty-value" id="qtyValue">1</span>
@@ -464,7 +487,13 @@ function loadProductDetail(productId) {
                 <button class="btn-buy-now" onclick="buyNow(${product.id}, productQuantity)">
                     Hemen Satın Al
                 </button>
-            </div>
+            </div>` : `
+            <div class="product-detail-actions">
+                <button class="btn-notify" onclick="notifyWhenAvailable(${product.id})" id="notifyBtn_${product.id}" style="width:100%;">
+                    <span class="material-icons-outlined">notifications_active</span>
+                    Gelince Haber Ver
+                </button>
+            </div>`}
             <div class="product-desc-section">
                 <h3>Ürün Açıklaması</h3>
                 <p class="product-desc">${product.description}</p>
@@ -1565,3 +1594,135 @@ changeQuantity = function(delta, maxStock) {
         if (product) updateVariantPrice(product);
     }
 };
+
+
+// ===== ONESIGNAL - GELİNCE HABER VER =====
+function notifyWhenAvailable(productId) {
+    const btn = document.getElementById('notifyBtn_' + productId);
+
+    // OneSignal yüklü mü kontrol
+    if (typeof OneSignal === 'undefined') {
+        // OneSignal yoksa localStorage'a kaydet
+        saveNotifyLocal(productId, btn);
+        return;
+    }
+
+    OneSignal.Notifications.requestPermission().then(granted => {
+        if (granted) {
+            // Ürün tag'i ekle
+            OneSignal.User.addTag('urun_' + productId, 'bekliyor');
+            markNotifyButton(btn);
+            showToast('Stok gelince bildirim alacaksınız!');
+        } else {
+            // İzin verilmediyse localStorage'a kaydet
+            saveNotifyLocal(productId, btn);
+        }
+    }).catch(() => {
+        saveNotifyLocal(productId, btn);
+    });
+}
+
+function saveNotifyLocal(productId, btn) {
+    let notifyList = JSON.parse(localStorage.getItem('notifyProducts') || '[]');
+    if (!notifyList.includes(productId)) {
+        notifyList.push(productId);
+        localStorage.setItem('notifyProducts', JSON.stringify(notifyList));
+    }
+    markNotifyButton(btn);
+    showToast('Stok takibine alındı!');
+}
+
+function markNotifyButton(btn) {
+    if (!btn) return;
+    btn.classList.add('subscribed');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-icons-outlined">check_circle</span> Stok gelince bildirim gönderilecek';
+}
+
+// Sayfa yüklendiğinde daha önce takibe alınan ürünlerin butonlarını güncelle
+function checkNotifiedProducts() {
+    const notifyList = JSON.parse(localStorage.getItem('notifyProducts') || '[]');
+    notifyList.forEach(pid => {
+        const btn = document.getElementById('notifyBtn_' + pid);
+        if (btn) markNotifyButton(btn);
+    });
+}
+
+
+// ===== OTOMATİK STOK BİLDİRİM GÖNDERİCİ =====
+// Sayfa yüklendiğinde restockedProducts dizisini kontrol eder.
+// Yeni stok gelen ürünler varsa, "Gelince Haber Ver" basanlara otomatik bildirim gönderir.
+const ONESIGNAL_APP_ID = document.querySelector('script[src*="OneSignal"]') ?
+    (document.querySelector('meta[name="onesignal-app-id"]')?.content || '') : '';
+
+function autoSendRestockNotifications() {
+    if (typeof restockedProducts === 'undefined' || restockedProducts.length === 0) return;
+
+    // Daha önce gönderilenleri kontrol et
+    const sentList = JSON.parse(localStorage.getItem('restockSent') || '[]');
+
+    restockedProducts.forEach(productId => {
+        // Zaten gönderilmişse atla
+        if (sentList.includes(productId)) return;
+
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+
+        // OneSignal REST API ile bildirim gönder
+        sendRestockNotification(productId, product.name);
+
+        // Gönderildi olarak işaretle
+        sentList.push(productId);
+        localStorage.setItem('restockSent', JSON.stringify(sentList));
+    });
+}
+
+function sendRestockNotification(productId, productName) {
+    // OneSignal APP ID'yi HTML'den al
+    let appId = '';
+    const scriptTag = document.querySelector('script:not([src])');
+    const htmlContent = document.documentElement.innerHTML;
+    const match = htmlContent.match(/appId:\s*"([^"]+)"/);
+    if (match && match[1] && match[1] !== 'BURAYA_ONESIGNAL_APP_ID_YAZ') {
+        appId = match[1];
+    }
+
+    if (!appId) {
+        console.log('OneSignal App ID bulunamadı, bildirim gönderilemedi.');
+        return;
+    }
+
+    // REST API Key gerekli - products.js'de tanımlı olmalı
+    if (typeof ONESIGNAL_REST_KEY === 'undefined' || !ONESIGNAL_REST_KEY) {
+        console.log('OneSignal REST API Key tanımlı değil.');
+        return;
+    }
+
+    fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + ONESIGNAL_REST_KEY
+        },
+        body: JSON.stringify({
+            app_id: appId,
+            filters: [
+                { field: 'tag', key: 'urun_' + productId, value: 'bekliyor' }
+            ],
+            headings: { tr: 'RotaGMC - Stok Bildirimi', en: 'RotaGMC - Stock Alert' },
+            contents: {
+                tr: productName + ' ürünü tekrar stoklarda! Hemen sipariş verin.',
+                en: productName + ' is back in stock!'
+            },
+            url: window.location.origin + '/#product-' + productId
+        })
+    })
+    .then(r => r.json())
+    .then(data => console.log('Bildirim gönderildi: urun_' + productId, data))
+    .catch(err => console.log('Bildirim hatası:', err));
+}
+
+// Sayfa yüklendiğinde çalıştır
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(autoSendRestockNotifications, 3000);
+});

@@ -2708,3 +2708,67 @@ body {
 .bulk-tier.active .tier-qty {
     color: #2e7d32;
 }
+
+
+/* ===== STOK 0 - TÜKENMİŞ ÜRÜN ===== */
+.product-card.out-of-stock .product-card-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(128, 128, 128, 0.5);
+    z-index: 1;
+}
+
+.out-of-stock-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(211, 47, 47, 0.9);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    z-index: 2;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.btn-notify {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    background: #1976d2;
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-notify:hover {
+    background: #1565c0;
+}
+
+.btn-notify.subscribed {
+    background: #9e9e9e;
+    cursor: default;
+    pointer-events: none;
+}
+
+.btn-notify .material-icons-outlined {
+    font-size: 18px;
+}
+
+/* Detay sayfası stok 0 */
+.product-detail-actions .btn-notify {
+    padding: 14px 28px;
+    font-size: 15px;
+}
