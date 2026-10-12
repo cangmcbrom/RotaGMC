@@ -320,7 +320,7 @@ products.push({
     features: ["Kumaş Kalitesi: %100 Süprem Pamuk kumuş yapısı sayesinde nefes alabilir, yumuşak ve gün boyu konforlu bir kullanım sunar.", "Baskı Teknolojisi: Yüksek çözünürlüklü ve çevre dostu dijital baskı tekniği kullanılmıştır. Yıkamaya karşı dirençlidir, solma veya çatlama yapmaz."],
     featured: true,                  // ana sayfada öne çıksın mı? (true/false)
     badge: "Yeni",                   // "Yeni", "Çok Satan", "Popüler" veya null
-    stock: 0,                       // stok adedi (5 ve altı uyarı verir)
+    stock: 5,                       // stok adedi (5 ve altı uyarı verir)
     rating: 4.8,                     // yıldız puanı (1-5)
     reviewCount: 127                  // değerlendirme sayısı
 });
@@ -342,7 +342,7 @@ products.find(p => p.id === 17).images = [
 // Birden fazla: [17, 5, 9]
 // Hepsi gittiyse: []
 // =============================================
-const restockedProducts = [];
+const restockedProducts = [17];
 
 
 // =============================================
