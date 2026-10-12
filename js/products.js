@@ -274,3 +274,58 @@ products.forEach(p => {
         p.images = [p.image];
     }
 });
+
+
+// =============================================
+// VARYASYON SİSTEMİ (Renk / Beden / Toptan Fiyat)
+// =============================================
+// Sadece istenen ürünlere eklenir. Eklenmeyenlerde bu seçenekler görünmez.
+//
+// ÖRNEK KULLANIM:
+//
+// products.find(p => p.id === 1).variants = {
+//     colors: [
+//         { name: "Siyah", code: "#000000", images: ["images/urun1-siyah-1.jpg", "images/urun1-siyah-2.jpg"], priceAdjust: 0 },
+//         { name: "Kırmızı", code: "#d32f2f", images: ["images/urun1-kirmizi-1.jpg", "images/urun1-kirmizi-2.jpg"], priceAdjust: 20 },
+//         { name: "Mavi", code: "#1976d2", images: ["images/urun1-mavi-1.jpg"], priceAdjust: 0 }
+//     ],
+//     sizes: [
+//         { name: "S", priceAdjust: 0 },
+//         { name: "M", priceAdjust: 0 },
+//         { name: "L", priceAdjust: 10 },
+//         { name: "XL", priceAdjust: 20 }
+//     ]
+// };
+//
+// products.find(p => p.id === 1).bulkPricing = [
+//     { minQty: 5, discountPercent: 10 },
+//     { minQty: 10, discountPercent: 20 },
+//     { minQty: 25, discountPercent: 30 }
+// ];
+//
+// NOT: priceAdjust = ana fiyata eklenen/çıkarılan TL miktarı (0 = fiyat değişmez)
+// NOT: discountPercent = o adetten itibaren uygulanan yüzde indirim
+// NOT: images dizisini boş bırakırsanız ana görsel kullanılır
+// =============================================
+
+
+products.push({
+    id: 17,                          // benzersiz numara (sırayla arttır)
+    name: "İstanbul Silüeti Bordo Erkek/Kadın %100 Pamuk T-Shirt – Galata Kulesi & Bosphorus Baskılı RG-TSHIRT-001", // ürün adı
+    category: "giyim",               // "telefon" veya "araba" veya "giyim"
+    price: 699.99,                       // indirimli fiyat
+    oldPrice: 849.99,                // indirimsizse null yaz
+    image: "images/urun17.jpg",      // ana görsel
+    description: "İstanbul’un Büyüsünü Üzerinizde Taşıyın! 🌉✨Tarihin ve modernliğin buluştuğu eşsiz İstanbul silüeti, özel tasarım ve yüksek kaliteli baskısıyla gardırobunuza şıklık katıyor. Galata Kulesi’nin zarafeti ve Boğaz Köprüsü’nün görkemli duruşu, bordo kumanın derin tonuyla mükemmel bir uyum yakaladı. 🧼 Yıkama ve Bakım Talimatı:30°C’de ters çevirerek yıkayınız.Ağartıcı ve çamaşır suyu kullanmayınız.Baskı üzerine doğrudan ütü basmayınız, tersten ütüleyiniz.",
+    features: ["Kumaş Kalitesi: %100 Süprem Pamuk kumuş yapısı sayesinde nefes alabilir, yumuşak ve gün boyu konforlu bir kullanım sunar.", "Baskı Teknolojisi: Yüksek çözünürlüklü ve çevre dostu dijital baskı tekniği kullanılmıştır. Yıkamaya karşı dirençlidir, solma veya çatlama yapmaz."],
+    featured: true,                  // ana sayfada öne çıksın mı? (true/false)
+    badge: "Yeni",                   // "Yeni", "Çok Satan", "Popüler" veya null
+    stock: 25,                       // stok adedi (5 ve altı uyarı verir)
+    rating: 4.8,                     // yıldız puanı (1-5)
+    reviewCount: 127                  // değerlendirme sayısı
+});
+
+
+products.find(p => p.id === 17).images = [
+    "images/urun17-1.jpg"
+];

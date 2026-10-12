@@ -109,7 +109,7 @@ select, input, textarea {
 }
 
 .logo {
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 800;
     letter-spacing: -1px;
     white-space: nowrap;
@@ -120,7 +120,7 @@ select, input, textarea {
 }
 
 .logo-img {
-    height: 36px;
+    height: 100px;
     width: auto;
     object-fit: contain;
 }
@@ -1444,9 +1444,9 @@ select, input, textarea {
 }
 
 .footer-col h4 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 16px;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 18px;
 }
 
 .footer-col p {
@@ -1876,7 +1876,7 @@ select, input, textarea {
 
 /* Footer Logo */
 .footer-logo-img {
-    height: 40px;
+    height: 100px;
     width: auto;
     object-fit: contain;
     margin-bottom: 16px;
@@ -2510,4 +2510,201 @@ body {
 .social-tt:hover {
     background: #000;
     box-shadow: 0 0 10px rgba(105, 201, 208, 0.5);
+}
+
+
+/* ===== YUKARI ÇIK BUTONU ===== */
+.back-to-top {
+    position: fixed;
+    bottom: 90px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(26, 26, 46, 0.5);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.back-to-top:hover {
+    background: rgba(26, 26, 46, 0.8);
+    transform: translateY(-3px);
+}
+
+.back-to-top .material-icons-outlined {
+    font-size: 24px;
+}
+
+@media (max-width: 768px) {
+    .back-to-top {
+        bottom: 75px;
+        left: 14px;
+        width: 38px;
+        height: 38px;
+    }
+}
+
+
+/* ===== VARYASYON SEÇİCİLER ===== */
+.variant-section {
+    margin-bottom: 8px;
+}
+
+.variant-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.variant-label .selected-name {
+    font-weight: 400;
+    color: var(--gray-500);
+}
+
+/* Renk Seçici */
+.color-swatches {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid var(--gray-200);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+}
+
+.color-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px white, 0 0 0 4px var(--accent);
+}
+
+.color-swatch::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.color-swatch.active::after {
+    opacity: 1;
+}
+
+/* Beden Seçici */
+.size-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.size-btn {
+    min-width: 44px;
+    height: 38px;
+    padding: 0 14px;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    background: white;
+    color: var(--gray-700);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.size-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.size-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+/* Toptan Fiyat Tablosu */
+.bulk-pricing {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+}
+
+.bulk-pricing-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bulk-tiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.bulk-tier {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--gray-600);
+    transition: all 0.2s;
+}
+
+.bulk-tier.active {
+    background: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+.bulk-tier .tier-qty {
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.bulk-tier.active .tier-qty {
+    color: #2e7d32;
 }

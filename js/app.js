@@ -277,6 +277,9 @@ function loadCategoryProducts(category) {
     } else if (category === 'araba') {
         titleEl.textContent = 'Araba Aksesuarları';
         breadcrumb.innerHTML = `<a href="#" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Araba Aksesuarları</span>`;
+    } else if (category === 'giyim') {
+        titleEl.textContent = 'Giyim';
+        breadcrumb.innerHTML = `<a href="#" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Giyim</span>`;
     } else {
         titleEl.textContent = 'Tüm Ürünler';
         breadcrumb.innerHTML = `<a href="#" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Tüm Ürünler</span>`;
@@ -329,7 +332,7 @@ function loadProductDetail(productId) {
     gallerySlide = 0;
 
     const breadcrumb = document.getElementById('productBreadcrumb');
-    const catName = product.category === 'telefon' ? 'Telefon Aksesuarları' : 'Araba Aksesuarları';
+    const catName = product.category === 'telefon' ? 'Telefon Aksesuarları' : product.category === 'araba' ? 'Araba Aksesuarları' : product.category === 'giyim' ? 'Giyim' : 'Ürünler';
     breadcrumb.innerHTML = `
         <a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a>
         <span class="separator">/</span>
@@ -369,6 +372,54 @@ function loadProductDetail(productId) {
         return `<div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="goToGallerySlide(${i})"><img src="${item.src}" alt="${product.name}"></div>`;
     }).join('');
 
+    // Varyasyon HTML'leri (sadece tanımlıysa)
+    const hasColors = product.variants && product.variants.colors && product.variants.colors.length > 0;
+    const hasSizes = product.variants && product.variants.sizes && product.variants.sizes.length > 0;
+    const hasBulk = product.bulkPricing && product.bulkPricing.length > 0;
+
+    let colorHTML = '';
+    if (hasColors) {
+        const firstColor = product.variants.colors[0];
+        colorHTML = `
+        <div class="variant-section">
+            <div class="variant-label">Renk: <span class="selected-name" id="selectedColorName">${firstColor.name}</span></div>
+            <div class="color-swatches">
+                ${product.variants.colors.map((c, i) => `
+                    <button class="color-swatch ${i === 0 ? 'active' : ''}" style="background:${c.code}" title="${c.name}" onclick="selectColor(${product.id}, ${i})" data-index="${i}"></button>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+
+    let sizeHTML = '';
+    if (hasSizes) {
+        sizeHTML = `
+        <div class="variant-section">
+            <div class="variant-label">Beden: <span class="selected-name" id="selectedSizeName">${product.variants.sizes[0].name}</span></div>
+            <div class="size-options">
+                ${product.variants.sizes.map((s, i) => `
+                    <button class="size-btn ${i === 0 ? 'active' : ''}" onclick="selectSize(${product.id}, ${i})" data-index="${i}">${s.name}</button>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+
+    let bulkHTML = '';
+    if (hasBulk) {
+        bulkHTML = `
+        <div class="bulk-pricing">
+            <div class="bulk-pricing-title"><span class="material-icons-outlined" style="font-size:16px;color:#4caf50;">sell</span> Toptan Fiyatlandırma</div>
+            <div class="bulk-tiers">
+                ${product.bulkPricing.map(t => `
+                    <div class="bulk-tier" data-min="${t.minQty}">
+                        <span class="tier-qty">${t.minQty}+ adet</span>
+                        <span>%${t.discountPercent} indirim</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+
     document.getElementById('productDetail').innerHTML = `
         <div class="product-gallery">
             <div class="gallery-slider" id="gallerySlider">
@@ -391,12 +442,15 @@ function loadProductDetail(productId) {
                 <div class="stars">${renderStars(product.rating)}</div>
                 <span class="rating-text">${product.rating} / 5 (${product.reviewCount} değerlendirme)</span>
             </div>` : ''}
-            <div class="product-price-section">
-                <span class="current-price">${formatPrice(product.price)}</span>
-                ${product.oldPrice ? `<span class="old-price">${formatPrice(product.oldPrice)}</span>` : ''}
+            <div class="product-price-section" id="productPriceSection">
+                <span class="current-price" id="detailCurrentPrice">${formatPrice(product.price)}</span>
+                ${product.oldPrice ? `<span class="old-price" id="detailOldPrice">${formatPrice(product.oldPrice)}</span>` : ''}
                 ${discount > 0 ? `<span class="product-badge" style="position:static">${discount} İndirim</span>` : ''}
             </div>
             ${product.stock && product.stock <= 5 ? `<p style="color:var(--accent);font-weight:600;font-size:13px;display:flex;align-items:center;gap:4px;"><span class="material-icons-outlined" style="font-size:16px">warning</span> Son ${product.stock} adet kaldı!</p>` : ''}
+            ${colorHTML}
+            ${sizeHTML}
+            ${bulkHTML}
             <div class="quantity-selector">
                 <button class="qty-btn" onclick="changeQuantity(-1)">−</button>
                 <span class="qty-value" id="qtyValue">1</span>
@@ -430,6 +484,9 @@ function loadProductDetail(productId) {
 
     // Galeri swipe desteği
     initGallerySwipe();
+
+    // Varyasyon state kaydet
+    window._currentVariant = { colorIndex: 0, sizeIndex: 0, productId: product.id };
 }
 
 function changeQuantity(delta, maxStock) {
@@ -1149,12 +1206,15 @@ function inlineQtyChange(productId, delta) {
 function updateCategoryCounts() {
     const telefonCount = products.filter(p => p.category === 'telefon').length;
     const arabaCount = products.filter(p => p.category === 'araba').length;
+    const giyimCount = products.filter(p => p.category === 'giyim').length;
 
     const telEl = document.getElementById('catCountTelefon');
     const arabaEl = document.getElementById('catCountAraba');
+    const giyimEl = document.getElementById('catCountGiyim');
 
     if (telEl) telEl.textContent = `${telefonCount} ürün`;
     if (arabaEl) arabaEl.textContent = `${arabaCount} ürün`;
+    if (giyimEl) giyimEl.textContent = `${giyimCount} ürün`;
 }
 
 
@@ -1216,6 +1276,7 @@ function showQuickActions(type) {
             ['🚚 Kargo Bilgisi', 'kargo'],
             ['📱 Telefon Aksesuarları', 'telefon'],
             ['🚗 Araba Aksesuarları', 'araba'],
+            ['👕 Giyim', 'giyim'],
             ['🔒 Gizlilik Politikası', 'gizlilik'],
             ['📞 İletişim', 'iletisim'],
             ['❓ Sıkça Sorulan Sorular', 'sss']
@@ -1292,6 +1353,10 @@ function handleQuickAction(action) {
             msg: '🚗 <strong>Araba Aksesuarları</strong> kategorimizi keşfedin!<br><br>Telefon tutucusu, araç kokusu, organizer, LED aydınlatma ve daha fazlası...<br><br>👉 <span class="chat-link" onclick="navigate(\'category\',\'araba\');toggleChat()">Araba Aksesuarlarına Göz At</span>',
             next: 'back'
         },
+        giyim: {
+            msg: '👕 <strong>Giyim</strong> kategorimize göz atın!<br><br>Tişört, sweatshirt, pantolon ve daha fazlası...<br><br>👉 <span class="chat-link" onclick="navigate(\'category\',\'giyim\');toggleChat()">Giyim Ürünlerine Göz At</span>',
+            next: 'back'
+        },
         gizlilik: {
             msg: '🔒 <strong>Gizlilik ve Güvenlik:</strong><br><br>✅ Kişisel verileriniz üçüncü şahıslarla <strong>paylaşılmaz</strong><br>✅ Yalnızca sipariş işlemi için kullanılır<br>✅ Sepet bilgileri sadece sizin cihazınızda saklanır<br>✅ Ödeme bilgileri sitemizde tutulmaz<br><br>Detaylar için: <span class="chat-link" onclick="navigate(\'privacy\');toggleChat()">Gizlilik Politikası</span>',
             next: 'back'
@@ -1365,6 +1430,8 @@ function sendChatMessage() {
         action = 'telefon';
     } else if (/araba|araç|oto|direksiyon|tutucu/.test(lower)) {
         action = 'araba';
+    } else if (/giyim|tişört|sweatshirt|pantolon|kıyafet|elbise/.test(lower)) {
+        action = 'giyim';
     } else if (/gizlilik|güven|güvenilir|veri|kişisel/.test(lower)) {
         action = 'gizlilik';
     } else if (/iletişim|numara|telefon.*no|ulaş|whatsapp|mail|email/.test(lower)) {
@@ -1394,3 +1461,107 @@ function sendChatMessage() {
         }, 500);
     }
 }
+
+
+// ===== YUKARI ÇIK BUTONU =====
+window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTop');
+    if (btn) {
+        if (window.scrollY > 400) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    }
+});
+
+
+// ===== VARYASYON SİSTEMİ =====
+function selectColor(productId, colorIndex) {
+    const product = products.find(p => p.id === productId);
+    if (!product || !product.variants || !product.variants.colors) return;
+
+    window._currentVariant.colorIndex = colorIndex;
+    const color = product.variants.colors[colorIndex];
+
+    // Aktif renk güncelle
+    document.querySelectorAll('.color-swatch').forEach((s, i) => s.classList.toggle('active', i === colorIndex));
+    document.getElementById('selectedColorName').textContent = color.name;
+
+    // Görselleri güncelle
+    if (color.images && color.images.length > 0) {
+        gallerySlide = 0;
+        const track = document.getElementById('galleryTrack');
+        const dotsWrap = document.querySelector('.gallery-dots');
+        const thumbsWrap = document.querySelector('.gallery-thumbs');
+
+        track.innerHTML = color.images.map(img => `<div class="gallery-slide"><img src="${img}" alt="${product.name}"></div>`).join('');
+
+        if (dotsWrap) {
+            dotsWrap.innerHTML = color.images.map((_, i) => `<button class="gallery-dot ${i === 0 ? 'active' : ''}" onclick="goToGallerySlide(${i})"></button>`).join('');
+        }
+        if (thumbsWrap) {
+            thumbsWrap.innerHTML = color.images.map((img, i) => `<div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="goToGallerySlide(${i})"><img src="${img}" alt="${product.name}"></div>`).join('');
+        }
+        updateGallery();
+        initGallerySwipe();
+    }
+
+    // Fiyat güncelle
+    updateVariantPrice(product);
+}
+
+function selectSize(productId, sizeIndex) {
+    const product = products.find(p => p.id === productId);
+    if (!product || !product.variants || !product.variants.sizes) return;
+
+    window._currentVariant.sizeIndex = sizeIndex;
+    const size = product.variants.sizes[sizeIndex];
+
+    document.querySelectorAll('.size-btn').forEach((s, i) => s.classList.toggle('active', i === sizeIndex));
+    document.getElementById('selectedSizeName').textContent = size.name;
+
+    updateVariantPrice(product);
+}
+
+function updateVariantPrice(product) {
+    let price = product.price;
+
+    // Renk fark
+    if (product.variants && product.variants.colors) {
+        const ci = window._currentVariant.colorIndex || 0;
+        price += product.variants.colors[ci].priceAdjust || 0;
+    }
+    // Beden fark
+    if (product.variants && product.variants.sizes) {
+        const si = window._currentVariant.sizeIndex || 0;
+        price += product.variants.sizes[si].priceAdjust || 0;
+    }
+    // Toptan indirim
+    if (product.bulkPricing) {
+        let discount = 0;
+        product.bulkPricing.forEach(t => {
+            if (productQuantity >= t.minQty) discount = t.discountPercent;
+        });
+        if (discount > 0) price = price * (1 - discount / 100);
+
+        // Aktif tier güncelle
+        document.querySelectorAll('.bulk-tier').forEach(el => {
+            const min = parseInt(el.dataset.min);
+            el.classList.toggle('active', productQuantity >= min);
+        });
+    }
+
+    const priceEl = document.getElementById('detailCurrentPrice');
+    if (priceEl) priceEl.textContent = formatPrice(price);
+}
+
+// changeQuantity'de toptan fiyat güncelle
+const _origChangeQuantity = changeQuantity;
+changeQuantity = function(delta, maxStock) {
+    _origChangeQuantity(delta, maxStock);
+    if (window._currentVariant) {
+        const product = products.find(p => p.id === window._currentVariant.productId);
+        if (product) updateVariantPrice(product);
+    }
+};

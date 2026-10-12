@@ -60,6 +60,7 @@
                 <a href="javascript:void(0)" class="nav-link" onclick="navigate('home')">Ana Sayfa</a>
                 <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'telefon')">Telefon Aksesuarları</a>
                 <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'araba')">Araba Aksesuarları</a>
+                <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'giyim')">Giyim</a>
                 <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'tumu')">Tüm Ürünler</a>
             </div>
         </nav>
@@ -77,6 +78,7 @@
             <a href="javascript:void(0)" onclick="navigate('home'); closeMobileMenu()">Ana Sayfa</a>
             <a href="javascript:void(0)" onclick="navigate('category', 'telefon'); closeMobileMenu()">Telefon Aksesuarları</a>
             <a href="javascript:void(0)" onclick="navigate('category', 'araba'); closeMobileMenu()">Araba Aksesuarları</a>
+            <a href="javascript:void(0)" onclick="navigate('category', 'giyim'); closeMobileMenu()">Giyim</a>
             <a href="javascript:void(0)" onclick="navigate('category', 'tumu'); closeMobileMenu()">Tüm Ürünler</a>
             <a href="javascript:void(0)" onclick="navigate('cart'); closeMobileMenu()">Sepetim</a>
         </div>
@@ -120,6 +122,15 @@
                             <h3>Araba Aksesuarları</h3>
                             <span class="cat-count" id="catCountAraba">0 ürün</span>
                             <p>Tutucu, koku, organizer ve daha fazlası</p>
+                        </div>
+                        <span class="material-icons-outlined cat-arrow">chevron_right</span>
+                    </div>
+                    <div class="category-card" onclick="navigate('category', 'giyim')">
+                        <img src="images/cat-giyim.png" alt="Giyim" class="category-card-img">
+                        <div class="category-card-content">
+                            <h3>Giyim</h3>
+                            <span class="cat-count" id="catCountGiyim">0 ürün</span>
+                            <p>Tişört, sweatshirt, pantolon ve daha fazlası</p>
                         </div>
                         <span class="material-icons-outlined cat-arrow">chevron_right</span>
                     </div>
@@ -450,6 +461,7 @@
                     <a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a>
                     <a href="javascript:void(0)" onclick="navigate('category', 'telefon')">Telefon Aksesuarları</a>
                     <a href="javascript:void(0)" onclick="navigate('category', 'araba')">Araba Aksesuarları</a>
+                    <a href="javascript:void(0)" onclick="navigate('category', 'giyim')">Giyim</a>
                 </div>
                 <div class="footer-col">
                     <h4>Bilgi</h4>
@@ -494,6 +506,11 @@
             </a>
         </div>
     </nav>
+
+    <!-- YUKARI ÇIK BUTONU -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <span class="material-icons-outlined">keyboard_arrow_up</span>
+    </button>
 
     <!-- TOAST BİLDİRİM -->
     <div class="toast" id="toast">
