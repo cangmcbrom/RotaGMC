@@ -463,7 +463,7 @@ function loadProductDetail(productId) {
             <div class="product-price-section" id="productPriceSection">
                 <span class="current-price" id="detailCurrentPrice">${formatPrice(product.price)}</span>
                 ${product.oldPrice ? `<span class="old-price" id="detailOldPrice">${formatPrice(product.oldPrice)}</span>` : ''}
-                ${discount > 0 ? `<span class="product-badge" style="position:static">${discount} İndirim</span>` : ''}
+                ${discount > 0 ? `<span class="product-badge" style="position:static">%${discount} İndirim</span>` : ''}
             </div>
             ${product.stock !== undefined && product.stock <= 0 ? `
             <p style="color:var(--accent);font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;background:#fff3f3;padding:10px 14px;border-radius:8px;border:1px solid #ffcdd2;">
@@ -1600,53 +1600,50 @@ changeQuantity = function(delta, maxStock) {
 function notifyWhenAvailable(productId) {
     const btn = document.getElementById('notifyBtn_' + productId);
 
-    // OneSignal yüklü mü kontrol
-    if (typeof OneSignal === 'undefined') {
-        // OneSignal yoksa localStorage'a kaydet
-        saveNotifyLocal(productId, btn);
-        return;
-    }
-
-    OneSignal.Notifications.requestPermission().then(granted => {
-        if (granted) {
-            // Ürün tag'i ekle
-            OneSignal.User.addTag('urun_' + productId, 'bekliyor');
-            markNotifyButton(btn);
-            showToast('Stok gelince bildirim alacaksınız!');
-        } else {
-            // İzin verilmediyse localStorage'a kaydet
-            saveNotifyLocal(productId, btn);
-        }
-    }).catch(() => {
-        saveNotifyLocal(productId, btn);
-    });
-}
-
-function saveNotifyLocal(productId, btn) {
+    // Önce localStorage'a kaydet + butonu hemen güncelle
     let notifyList = JSON.parse(localStorage.getItem('notifyProducts') || '[]');
     if (!notifyList.includes(productId)) {
         notifyList.push(productId);
         localStorage.setItem('notifyProducts', JSON.stringify(notifyList));
     }
-    markNotifyButton(btn);
-    showToast('Stok takibine alındı!');
-}
 
-function markNotifyButton(btn) {
-    if (!btn) return;
-    btn.classList.add('subscribed');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="material-icons-outlined">check_circle</span> Stok gelince bildirim gönderilecek';
+    // Butonu anında griye çevir
+    if (btn) {
+        btn.classList.add('subscribed');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-icons-outlined">check_circle</span> Stok gelince bildirim gönderilecek';
+    }
+
+    showToast('Stok takibine alındı! Ürün gelince bildirim alacaksınız.');
+
+    // OneSignal varsa tag ekle (arka planda)
+    try {
+        if (window.OneSignal) {
+            OneSignal.Notifications.requestPermission();
+            setTimeout(function() {
+                try { OneSignal.User.addTag('urun_' + productId, 'bekliyor'); } catch(e) {}
+            }, 1000);
+        }
+    } catch(e) {}
 }
 
 // Sayfa yüklendiğinde daha önce takibe alınan ürünlerin butonlarını güncelle
 function checkNotifiedProducts() {
     const notifyList = JSON.parse(localStorage.getItem('notifyProducts') || '[]');
-    notifyList.forEach(pid => {
+    notifyList.forEach(function(pid) {
         const btn = document.getElementById('notifyBtn_' + pid);
-        if (btn) markNotifyButton(btn);
+        if (btn) {
+            btn.classList.add('subscribed');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-icons-outlined">check_circle</span> Stok gelince bildirim gönderilecek';
+        }
     });
 }
+
+// Her sayfa geçişinde kontrol et
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(checkNotifiedProducts, 500);
+});
 
 
 // ===== OTOMATİK STOK BİLDİRİM GÖNDERİCİ =====
