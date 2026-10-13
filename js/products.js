@@ -460,3 +460,124 @@ const coupons = [
 //
 // 3) Kuponu devre dışı bırakmak: active: false yap
 // =============================================
+
+
+// =============================================
+// ÜRÜN YORUMLARI
+// =============================================
+// Her ürüne yorum eklemek için aşağıdaki formatta obje ekle.
+//
+// ALANLAR:
+//   productId : Yorum yapılan ürünün ID'si (products dizisindeki id)
+//   reviews   : Yorum dizisi, her yorum:
+//     name    : Müşteri adı (sansürlü gösterilecek, sadece ilk harf açık)
+//     initial : Profil dairesinde gösterilecek harf (istediğini yaz)
+//     rating  : Kaç yıldız (1-5 arası)
+//     text    : Yorum metni
+//     date    : Tarih (opsiyonel, yazarsan gösterilir)
+//
+// ÖRNEK:
+// =============================================
+const productReviews = {
+    // Ürün ID 1 - Premium Silikon Telefon Kılıfı
+    1: [
+        {
+            name: "Ahmet Y.",
+            initial: "A",
+            rating: 5,
+            text: "Çok kaliteli bir ürün, telefonuma birebir oturdu. Darbelere karşı gerçekten koruyucu. Kesinlikle tavsiye ederim!",
+            date: "12 Ekim 2026"
+        },
+        {
+            name: "Merve K.",
+            initial: "M",
+            rating: 4,
+            text: "Güzel kılıf, rengi fotoğraftaki gibi. Tek eksiği biraz kaygan olması ama genel olarak memnunum.",
+            date: "10 Ekim 2026"
+        },
+        {
+            name: "Burak S.",
+            initial: "B",
+            rating: 5,
+            text: "3 tane aldım ailem için, hepsi mükemmel geldi. Kargo da çok hızlıydı teşekkürler.",
+            date: "8 Ekim 2026"
+        }
+    ],
+
+    // Ürün ID 4 - Bluetooth Kulaklık TWS
+    4: [
+        {
+            name: "Elif D.",
+            initial: "E",
+            rating: 5,
+            text: "Ses kalitesi bu fiyata inanılmaz! Gürültü engelleme özelliği de gayet başarılı.",
+            date: "11 Ekim 2026"
+        },
+        {
+            name: "Can T.",
+            initial: "C",
+            rating: 4,
+            text: "Pil ömrü gerçekten uzun, günlük kullanımda 2-3 gün gidiyor. Tavsiye ederim.",
+            date: "9 Ekim 2026"
+        }
+    ],
+
+    // Ürün ID 9 - Manyetik Araç Telefon Tutucusu
+    9: [
+        {
+            name: "Serkan A.",
+            initial: "S",
+            rating: 5,
+            text: "Mıknatısı çok güçlü, telefon hiç düşmüyor. Montajı da çok kolay oldu.",
+            date: "11 Ekim 2026"
+        },
+        {
+            name: "Zeynep M.",
+            initial: "Z",
+            rating: 5,
+            text: "Harika ürün! Araçta navigasyon kullanırken çok işime yarıyor. Çok sağlam tutuyor.",
+            date: "7 Ekim 2026"
+        },
+        {
+            name: "Oğuz R.",
+            initial: "O",
+            rating: 4,
+            text: "Güzel tutucu, tasarımı da şık. Havalandırma kanalına tam oturuyor.",
+            date: "5 Ekim 2026"
+        },
+        {
+            name: "Fatma B.",
+            initial: "F",
+            rating: 5,
+            text: "Eşime de aldım çok beğendi. Hızlı kargo için de ayrıca teşekkürler!",
+            date: "3 Ekim 2026"
+        }
+    ]
+};
+// =============================================
+// YORUM NASIL EKLENİR:
+// =============================================
+//
+// 1) Mevcut ürüne yorum ekle:
+//    productReviews[1].push({
+//        name: "Ali V.",
+//        initial: "A",
+//        rating: 5,
+//        text: "Süper ürün!",
+//        date: "13 Ekim 2026"
+//    });
+//
+// 2) Yeni ürüne ilk yorumu ekle (ürün ID 7 örneği):
+//    productReviews[7] = [
+//        {
+//            name: "Deniz K.",
+//            initial: "D",
+//            rating: 4,
+//            text: "Gayet güzel, memnunum.",
+//            date: "13 Ekim 2026"
+//        }
+//    ];
+//
+// NOT: "name" alanında soyadını kısalt (Örn: "Ahmet Y.")
+//      "initial" profil dairesinde gösterilecek harf
+// =============================================

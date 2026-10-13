@@ -508,6 +508,7 @@ function loadProductDetail(productId) {
                     </ul>
                 ` : ''}
             </div>
+            ${renderProductReviews(product.id)}
         </div>
     `;
 
@@ -1960,4 +1961,91 @@ function finalizeCouponUsage() {
     if (appliedCoupon) {
         incrementUserCouponUse(appliedCoupon.code);
     }
+}
+
+
+// ===== ÜRÜN YORUM SİSTEMİ =====
+function censorName(name) {
+    if (!name) return '***';
+    var parts = name.split(' ');
+    var censored = parts.map(function(part) {
+        if (part.length <= 1) return part;
+        return part.charAt(0) + '*'.repeat(part.length - 1);
+    });
+    return censored.join(' ');
+}
+
+function renderReviewStars(rating) {
+    var stars = '';
+    for (var i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            stars += '<span class="review-star filled">&#9733;</span>';
+        } else {
+            stars += '<span class="review-star empty">&#9733;</span>';
+        }
+    }
+    return stars;
+}
+
+function renderProductReviews(productId) {
+    if (typeof productReviews === 'undefined') return '';
+    var reviews = productReviews[productId];
+    if (!reviews || reviews.length === 0) return '';
+
+    var INITIAL_SHOW = 3;
+    var hasMore = reviews.length > INITIAL_SHOW;
+
+    // Ortalama puan hesapla
+    var totalRating = 0;
+    reviews.forEach(function(r) { totalRating += r.rating; });
+    var avgRating = (totalRating / reviews.length).toFixed(1);
+
+    var reviewsHTML = reviews.map(function(review, index) {
+        var hiddenClass = (index >= INITIAL_SHOW && hasMore) ? ' review-hidden' : '';
+        return '<div class="review-item' + hiddenClass + '">' +
+            '<div class="review-header">' +
+                '<div class="review-avatar">' + review.initial + '</div>' +
+                '<div class="review-meta">' +
+                    '<span class="review-name">' + censorName(review.name) + '</span>' +
+                    '<div class="review-stars">' + renderReviewStars(review.rating) + '</div>' +
+                '</div>' +
+                (review.date ? '<span class="review-date">' + review.date + '</span>' : '') +
+            '</div>' +
+            '<p class="review-text">' + review.text + '</p>' +
+        '</div>';
+    }).join('');
+
+    var showMoreBtn = hasMore
+        ? '<button class="review-show-more-btn" onclick="showAllReviews(this)">' +
+            '<span class="material-icons-outlined" style="font-size:18px;vertical-align:middle">expand_more</span> ' +
+            'Tüm Yorumları Gör (' + reviews.length + ')' +
+          '</button>'
+        : '';
+
+    return '<div class="product-reviews-section">' +
+        '<div class="reviews-header">' +
+            '<h3><span class="material-icons-outlined" style="vertical-align:middle;margin-right:6px">rate_review</span>Müşteri Yorumları</h3>' +
+            '<div class="reviews-summary">' +
+                '<span class="reviews-avg">' + avgRating + '</span>' +
+                '<div class="reviews-avg-stars">' + renderReviewStars(Math.round(avgRating)) + '</div>' +
+                '<span class="reviews-count">(' + reviews.length + ' yorum)</span>' +
+            '</div>' +
+        '</div>' +
+        '<div class="reviews-notice">' +
+            '<span class="material-icons-outlined" style="font-size:16px;flex-shrink:0">verified</span>' +
+            '<span>Buradaki tüm yorumlar, WhatsApp üzerinden bizden alışveriş yapan müşterilerimiz tarafından iletilmiştir. Bir ürün hakkında yorum bırakmak için ilgili ürünü satın almış olmanız ve bize WhatsApp üzerinden ulaşmanız gerekmektedir.</span>' +
+        '</div>' +
+        '<div class="reviews-list">' + reviewsHTML + '</div>' +
+        showMoreBtn +
+    '</div>';
+}
+
+function showAllReviews(btn) {
+    var section = btn.parentElement;
+    var hiddenItems = section.querySelectorAll('.review-hidden');
+    hiddenItems.forEach(function(item) {
+        item.classList.remove('review-hidden');
+        item.style.animation = 'fadeInUp 0.3s ease forwards';
+    });
+    btn.style.display = 'none';
 }
