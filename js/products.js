@@ -330,6 +330,22 @@ products.find(p => p.id === 17).images = [
     "images/urun17-1.jpg"
 ];
 
+products.find(p => p.id === 17).variants = {
+    colors: [
+        { name: "Siyah", code: "#000000", images: ["images/u17-siyah1.jpg", "images/u17-siyah2.jpg"], priceAdjust: 0 },
+        { name: "Beyaz", code: "#ffffff", images: ["images/u17-beyaz1.jpg"], priceAdjust: 0 },
+        { name: "Kırmızı", code: "#d32f2f", images: ["images/u17-kirmizi1.jpg"], priceAdjust: 20 },
+        { name: "Turuncu", code: "#ff9500", images: ["images/u17-turuncu1.jpg"], priceAdjust: 20 }
+    ],
+    sizes: [
+        { name: "S", priceAdjust: 0 },
+        { name: "M", priceAdjust: 0 },
+        { name: "L", priceAdjust: 10 },
+        { name: "XL", priceAdjust: 20 },
+        { name: "2XL", priceAdjust: 40 }
+    ]
+};
+
 
 // =============================================
 // OTOMATİK STOK BİLDİRİM SİSTEMİ
@@ -342,7 +358,7 @@ products.find(p => p.id === 17).images = [
 // Birden fazla: [17, 5, 9]
 // Hepsi gittiyse: []
 // =============================================
-const restockedProducts = [17];
+const restockedProducts = [];
 
 
 // =============================================
