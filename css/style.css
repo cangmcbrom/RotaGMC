@@ -2772,3 +2772,145 @@ body {
     padding: 14px 28px;
     font-size: 15px;
 }
+
+
+/* ===== KUPON / İNDİRİM KODU ===== */
+.coupon-box {
+    background: var(--white);
+    border: 1.5px dashed var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    margin: 16px 0;
+    transition: var(--transition);
+}
+
+.coupon-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.08);
+}
+
+.coupon-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 10px;
+}
+
+.coupon-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.coupon-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: var(--transition);
+    background: var(--gray-50);
+    color: var(--gray-800);
+}
+
+.coupon-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--white);
+}
+
+.coupon-input:disabled {
+    background: var(--gray-100);
+    color: var(--gray-500);
+}
+
+.coupon-apply-btn {
+    padding: 10px 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.coupon-apply-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.coupon-remove-btn {
+    padding: 10px 20px;
+    background: var(--gray-200);
+    color: var(--gray-700);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.coupon-remove-btn:hover {
+    background: var(--gray-300);
+}
+
+.coupon-message {
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.coupon-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.coupon-error {
+    background: #fff3f3;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.coupon-discount-row {
+    color: #4caf50 !important;
+}
+
+.coupon-discount-row span {
+    color: #4caf50 !important;
+}
+
+/* Checkout kupon kutusu */
+#checkoutCouponBox {
+    margin-top: 12px;
+}
+
+#checkoutCouponBox .coupon-box {
+    border-color: var(--gray-200);
+}
+
+@media (max-width: 480px) {
+    .coupon-input-row {
+        flex-direction: column;
+    }
+    .coupon-apply-btn,
+    .coupon-remove-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

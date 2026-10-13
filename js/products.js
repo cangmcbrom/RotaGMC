@@ -367,3 +367,96 @@ const restockedProducts = [];
 // OneSignal paneli → Settings → Keys & IDs → REST API Key
 // Aşağıya yapıştır:
 const ONESIGNAL_REST_KEY = "oq4pnqazruwzuj3u5svopk4bv";
+
+
+// =============================================
+// KUPON / İNDİRİM KODU SİSTEMİ
+// =============================================
+// Yeni kupon eklemek için aşağıdaki diziye obje ekle.
+//
+// ALANLAR:
+//   code       : Kupon kodu (büyük harf yaz, sistem otomatik büyük harf çevirir)
+//   type       : "percent" = yüzde indirim, "fixed" = sabit TL indirim
+//   value      : İndirim değeri (percent ise oran, fixed ise TL)
+//   scope      : "all" = tüm site, "category" = belirli kategori, "product" = belirli ürün
+//   scopeTarget: scope "category" ise kategori adı (örn: "telefon"), scope "product" ise ürün ID'si (örn: 5)
+//   minAmount  : Minimum sepet tutarı (0 = sınır yok)
+//   maxUses    : Maksimum toplam kullanım sayısı (0 = sınırsız)
+//   perUser    : Bir kişi max kaç kere kullanabilir (1 = tek seferlik)
+//   expiresAt  : Son kullanma tarihi/saati (ISO formatında) veya null = süresiz
+//   active     : true = aktif, false = devre dışı
+//
+// ÖRNEK KUPONLAR:
+// =============================================
+const coupons = [
+    {
+        code: "HOSGELDIN",
+        type: "percent",
+        value: 10,
+        scope: "all",
+        scopeTarget: null,
+        minAmount: 200,
+        maxUses: 500,
+        perUser: 1,
+        expiresAt: null,
+        active: true
+    },
+    {
+        code: "TELEFON50",
+        type: "fixed",
+        value: 50,
+        scope: "category",
+        scopeTarget: "telefon",
+        minAmount: 300,
+        maxUses: 100,
+        perUser: 1,
+        expiresAt: null,
+        active: true
+    },
+    {
+        code: "GIYIM20",
+        type: "percent",
+        value: 20,
+        scope: "category",
+        scopeTarget: "giyim",
+        minAmount: 250,
+        maxUses: 0,
+        perUser: 1,
+        expiresAt: null,
+        active: true
+    }
+];
+// =============================================
+// KUPON NASIL EKLENİR - HIZLI REHBER:
+// =============================================
+//
+// 1) Tüm sitede %15 indirim, 24 saat geçerli, 200 kişilik:
+//    {
+//        code: "YAZ15",
+//        type: "percent",
+//        value: 15,
+//        scope: "all",
+//        scopeTarget: null,
+//        minAmount: 0,
+//        maxUses: 200,
+//        perUser: 1,
+//        expiresAt: "2026-10-15T23:59:00",   ← bitiş tarihi yaz
+//        active: true
+//    }
+//
+// 2) Sadece ürün ID 5'e özel 30 TL indirim:
+//    {
+//        code: "OZEL30",
+//        type: "fixed",
+//        value: 30,
+//        scope: "product",
+//        scopeTarget: 5,
+//        minAmount: 0,
+//        maxUses: 0,
+//        perUser: 1,
+//        expiresAt: null,
+//        active: true
+//    }
+//
+// 3) Kuponu devre dışı bırakmak: active: false yap
+// =============================================

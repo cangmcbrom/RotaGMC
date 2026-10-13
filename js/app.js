@@ -787,11 +787,16 @@ function renderCart() {
             <span class="material-icons-outlined">check_circle</span>
             Tebrikler! Siparişinize <strong>ücretsiz kargo</strong> uygulandı.
         </div>` : ''}
+        ${getCouponHTML('cartCouponInput')}
         <div class="cart-summary">
             <div class="cart-summary-row">
                 <span>Ürünler (${cart.reduce((s, i) => s + i.quantity, 0)} adet)</span>
                 <span>${formatPrice(totalPrice)}</span>
             </div>
+            ${appliedCoupon ? `<div class="cart-summary-row coupon-discount-row">
+                <span><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;color:#4caf50">confirmation_number</span> Kupon (${appliedCoupon.code})</span>
+                <span style="color:#4caf50;font-weight:700">-${formatPrice(appliedCoupon.discountAmount)}</span>
+            </div>` : ''}
             <div class="cart-summary-row kargo">
                 <span>Kargo</span>
                 <span>${kargoFree ? '<span class="kargo-free-tag">Ücretsiz</span>' : formatPrice(KARGO_UCRETI)}</span>
@@ -799,7 +804,7 @@ function renderCart() {
             <div class="cart-summary-divider"></div>
             <div class="cart-summary-row total">
                 <span>Toplam</span>
-                <span>${formatPrice(genelToplam)}</span>
+                <span>${formatPrice(genelToplam - (appliedCoupon ? appliedCoupon.discountAmount : 0))}</span>
             </div>
             <div class="cart-summary-note">Fiyatlara KDV dahildir.</div>
             <div class="cart-summary-note" style="margin-top:4px;color:#2e7d32;font-size:12px;">🎁 Tüm siparişleriniz darbelere korumalı özel kutusunda gönderilir.</div>
@@ -840,7 +845,8 @@ function renderCheckout() {
 
     const kargoFree = total >= KARGO_FREE_LIMIT;
     const kargo = kargoFree ? 0 : KARGO_UCRETI;
-    const genelToplam = total + kargo;
+    const couponDiscount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+    const genelToplam = total + kargo - couponDiscount;
 
     // Kargo satırı ekle
     checkoutItems.innerHTML += `
@@ -851,12 +857,30 @@ function renderCheckout() {
         </div>
     `;
 
+    // Kupon satırı
+    if (appliedCoupon) {
+        checkoutItems.innerHTML += `
+            <div class="checkout-item" style="color:#4caf50;font-weight:600;">
+                <span class="checkout-item-name"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">confirmation_number</span> Kupon (${appliedCoupon.code})</span>
+                <span class="checkout-item-qty"></span>
+                <span class="checkout-item-price" style="color:#4caf50">-${formatPrice(couponDiscount)}</span>
+            </div>
+        `;
+    }
+
     document.getElementById('checkoutTotal').textContent = formatPrice(genelToplam);
 
-    // KDV notu
+    // Kupon kutusu ekle (checkout-total'ın altına)
     const totalEl = document.getElementById('checkoutTotal').parentElement;
+    if (totalEl && !document.getElementById('checkoutCouponBox')) {
+        totalEl.insertAdjacentHTML('afterend', '<div id="checkoutCouponBox">' + getCouponHTML('checkoutCouponInput') + '</div>');
+    }
+
+    // KDV notu
     if (totalEl && !document.getElementById('checkoutKdvNote')) {
-        totalEl.insertAdjacentHTML('afterend', '<p id="checkoutKdvNote" style="text-align:center;font-size:11px;color:#9e9e9e;margin-top:6px;">Fiyatlara KDV ve kargo dahildir.</p>');
+        var couponBox = document.getElementById('checkoutCouponBox');
+        var afterEl = couponBox || totalEl;
+        afterEl.insertAdjacentHTML('afterend', '<p id="checkoutKdvNote" style="text-align:center;font-size:11px;color:#9e9e9e;margin-top:6px;">Fiyatlara KDV ve kargo dahildir.</p>');
     }
 
     // İl listesini yükle
@@ -954,10 +978,14 @@ function sendWhatsApp() {
 
     const kargoFree = total >= KARGO_FREE_LIMIT;
     const kargo = kargoFree ? 0 : KARGO_UCRETI;
+    const couponDisc = appliedCoupon ? appliedCoupon.discountAmount : 0;
     lines.push('');
     lines.push('Urun Toplami: ' + formatPrice(total));
     lines.push('Kargo: ' + (kargoFree ? 'Ucretsiz' : formatPrice(KARGO_UCRETI)));
-    lines.push('GENEL TOPLAM: ' + formatPrice(total + kargo));
+    if (appliedCoupon) {
+        lines.push('Kupon (' + appliedCoupon.code + '): -' + formatPrice(couponDisc));
+    }
+    lines.push('GENEL TOPLAM: ' + formatPrice(total + kargo - couponDisc));
     lines.push('');
     lines.push('MUSTERI BILGILERI:');
     lines.push('Isim: ' + firstName + ' ' + lastName);
@@ -974,6 +1002,9 @@ function sendWhatsApp() {
     // WhatsApp linkini oluştur
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+    // Kupon kullanımını kaydet
+    finalizeCouponUsage();
 
     // Yeni sekmede aç
     window.open(whatsappUrl, '_blank');
@@ -1723,3 +1754,210 @@ function sendRestockNotification(productId, productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(autoSendRestockNotifications, 3000);
 });
+
+// ===== KUPON / İNDİRİM KODU SİSTEMİ =====
+let appliedCoupon = null; // Şu an uygulanan kupon
+
+function getCouponUsage() {
+    return JSON.parse(localStorage.getItem('rotagmc_coupon_usage') || '{}');
+}
+
+function saveCouponUsage(usage) {
+    localStorage.setItem('rotagmc_coupon_usage', JSON.stringify(usage));
+}
+
+function getTotalCouponUseCount(code) {
+    return parseInt(localStorage.getItem('coupon_total_' + code) || '0');
+}
+
+function incrementCouponUseCount(code) {
+    const count = getTotalCouponUseCount(code) + 1;
+    localStorage.setItem('coupon_total_' + code, count.toString());
+}
+
+function getUserCouponUseCount(code) {
+    const usage = getCouponUsage();
+    return usage[code] || 0;
+}
+
+function incrementUserCouponUse(code) {
+    const usage = getCouponUsage();
+    usage[code] = (usage[code] || 0) + 1;
+    saveCouponUsage(usage);
+    incrementCouponUseCount(code);
+}
+
+function validateCoupon(code) {
+    if (!code || code.trim() === '') return { valid: false, message: 'Lütfen bir kupon kodu girin.' };
+
+    code = code.trim().toUpperCase();
+
+    // Kupon bul
+    if (typeof coupons === 'undefined') return { valid: false, message: 'Kupon sistemi yüklenemedi.' };
+    const coupon = coupons.find(function(c) { return c.code === code && c.active; });
+    if (!coupon) return { valid: false, message: 'Geçersiz veya süresi dolmuş kupon kodu.' };
+
+    // Süre kontrolü
+    if (coupon.expiresAt) {
+        const expiry = new Date(coupon.expiresAt);
+        if (new Date() > expiry) {
+            return { valid: false, message: 'Bu kuponun süresi dolmuş.' };
+        }
+    }
+
+    // Toplam kullanım kontrolü
+    if (coupon.maxUses > 0) {
+        const totalUsed = getTotalCouponUseCount(code);
+        if (totalUsed >= coupon.maxUses) {
+            return { valid: false, message: 'Bu kuponun kullanım limiti dolmuş.' };
+        }
+    }
+
+    // Kişi başı kullanım kontrolü
+    if (coupon.perUser > 0) {
+        const userUsed = getUserCouponUseCount(code);
+        if (userUsed >= coupon.perUser) {
+            return { valid: false, message: 'Bu kuponu daha önce kullandınız.' };
+        }
+    }
+
+    // Sepet tutarı hesapla (scope'a göre)
+    const cart = getCart();
+    let eligibleTotal = 0;
+    let hasEligibleItem = false;
+
+    cart.forEach(function(cartItem) {
+        const product = products.find(function(p) { return p.id === cartItem.productId; });
+        if (!product) return;
+
+        var isEligible = false;
+        if (coupon.scope === 'all') {
+            isEligible = true;
+        } else if (coupon.scope === 'category' && product.category === coupon.scopeTarget) {
+            isEligible = true;
+        } else if (coupon.scope === 'product' && product.id === coupon.scopeTarget) {
+            isEligible = true;
+        }
+
+        if (isEligible) {
+            eligibleTotal += product.price * cartItem.quantity;
+            hasEligibleItem = true;
+        }
+    });
+
+    if (!hasEligibleItem) {
+        var scopeText = 'Bu kupon sepetinizdeki ürünlerde geçerli değil.';
+        if (coupon.scope === 'category') {
+            var catNames = { telefon: 'Telefon Aksesuarları', araba: 'Araba Aksesuarları', giyim: 'Giyim' };
+            scopeText = 'Bu kupon sadece ' + (catNames[coupon.scopeTarget] || coupon.scopeTarget) + ' kategorisinde geçerlidir.';
+        } else if (coupon.scope === 'product') {
+            var targetProduct = products.find(function(p) { return p.id === coupon.scopeTarget; });
+            scopeText = 'Bu kupon sadece "' + (targetProduct ? targetProduct.name : 'belirli bir ürün') + '" için geçerlidir.';
+        }
+        return { valid: false, message: scopeText };
+    }
+
+    // Minimum tutar kontrolü
+    if (coupon.minAmount > 0 && eligibleTotal < coupon.minAmount) {
+        return { valid: false, message: 'Bu kupon en az ' + formatPrice(coupon.minAmount) + ' tutarında alışverişlerde geçerlidir. Mevcut tutar: ' + formatPrice(eligibleTotal) };
+    }
+
+    // İndirim hesapla
+    var discountAmount = 0;
+    if (coupon.type === 'percent') {
+        discountAmount = Math.round(eligibleTotal * coupon.value / 100 * 100) / 100;
+    } else if (coupon.type === 'fixed') {
+        discountAmount = Math.min(coupon.value, eligibleTotal);
+    }
+
+    return {
+        valid: true,
+        coupon: coupon,
+        discountAmount: discountAmount,
+        message: coupon.type === 'percent'
+            ? '%' + coupon.value + ' indirim uygulandı! (-' + formatPrice(discountAmount) + ')'
+            : formatPrice(coupon.value) + ' indirim uygulandı!'
+    };
+}
+
+function applyCouponFromInput(inputId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+
+    var code = input.value.trim().toUpperCase();
+    var result = validateCoupon(code);
+
+    // Mevcut mesajı temizle
+    var msgEl = input.parentElement.querySelector('.coupon-message');
+    if (!msgEl) {
+        msgEl = document.createElement('div');
+        msgEl.className = 'coupon-message';
+        input.parentElement.appendChild(msgEl);
+    }
+
+    if (result.valid) {
+        appliedCoupon = { code: code, coupon: result.coupon, discountAmount: result.discountAmount };
+        msgEl.innerHTML = '<span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">check_circle</span> ' + result.message;
+        msgEl.className = 'coupon-message coupon-success';
+        input.disabled = true;
+        var applyBtn = input.parentElement.querySelector('.coupon-apply-btn');
+        if (applyBtn) {
+            applyBtn.textContent = 'Kaldır';
+            applyBtn.disabled = false;
+            applyBtn.className = 'coupon-remove-btn';
+            applyBtn.onclick = function() { removeCoupon(inputId); };
+        }
+        // Sepeti güncelle
+        renderCart();
+        if (document.getElementById('checkoutPage') && !document.getElementById('checkoutPage').classList.contains('hidden')) {
+            renderCheckout();
+        }
+    } else {
+        appliedCoupon = null;
+        msgEl.innerHTML = '<span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">error</span> ' + result.message;
+        msgEl.className = 'coupon-message coupon-error';
+    }
+}
+
+function removeCoupon(inputId) {
+    appliedCoupon = null;
+    var input = document.getElementById(inputId);
+    if (input) {
+        input.value = '';
+        input.disabled = false;
+    }
+    var msgEl = input ? input.parentElement.querySelector('.coupon-message') : null;
+    if (msgEl) msgEl.remove();
+
+    // Sepeti güncelle
+    renderCart();
+    if (document.getElementById('checkoutPage') && !document.getElementById('checkoutPage').classList.contains('hidden')) {
+        renderCheckout();
+    }
+}
+
+function getCouponHTML(inputId) {
+    var existingCode = appliedCoupon ? appliedCoupon.code : '';
+    var isApplied = appliedCoupon !== null;
+    return '<div class="coupon-box">' +
+        '<div class="coupon-header">' +
+            '<span class="material-icons-outlined" style="font-size:18px;color:var(--accent)">confirmation_number</span>' +
+            '<span>İndirim Kodunuz Var mı?</span>' +
+        '</div>' +
+        '<div class="coupon-input-row">' +
+            '<input type="text" id="' + inputId + '" class="coupon-input" placeholder="Kupon kodunu girin..." value="' + existingCode + '" ' + (isApplied ? 'disabled' : '') +
+            ' onkeydown="if(event.key===\'Enter\')applyCouponFromInput(\'' + inputId + '\')">' +
+            (isApplied
+                ? '<button class="coupon-remove-btn" onclick="removeCoupon(\'' + inputId + '\')">Kaldır</button>'
+                : '<button class="coupon-apply-btn" onclick="applyCouponFromInput(\'' + inputId + '\')">Uygula</button>'
+            ) +
+        '</div>' +
+        (isApplied ? '<div class="coupon-message coupon-success"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">check_circle</span> %' + (appliedCoupon.coupon.type === 'percent' ? appliedCoupon.coupon.value + ' indirim uygulandı! (-' + formatPrice(appliedCoupon.discountAmount) + ')' : formatPrice(appliedCoupon.coupon.value) + ' indirim uygulandı!') + '</div>' : '') +
+    '</div>';
+}
+
+function finalizeCouponUsage() {
+    if (appliedCoupon) {
+        incrementUserCouponUse(appliedCoupon.code);
+    }
+}
