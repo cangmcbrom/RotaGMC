@@ -882,10 +882,10 @@ function renderCart() {
 
         return `
             <div class="cart-item">
-                <div class="cart-item-image">
+                <div class="cart-item-image" onclick="navigate('product', ${product.id})" style="cursor:pointer">
                     <img src="${product.image}" alt="${product.name}" loading="lazy">
                 </div>
-                <div class="cart-item-info">
+                <div class="cart-item-info" onclick="navigate('product', ${product.id})" style="cursor:pointer">
                     <h4>${product.name}</h4>
                     <span class="cart-item-price">${formatPrice(product.price)}</span>
                 </div>
@@ -2276,3 +2276,39 @@ document.addEventListener('click', function(e) {
         });
     }
 });
+
+
+// ===== TEMA DEĞİŞTİRME =====
+function toggleTheme() {
+    var html = document.documentElement;
+    var current = html.getAttribute('data-theme');
+    var newTheme = current === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rotagmc_theme', newTheme);
+    
+    updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+    var icon = document.getElementById('themeIcon');
+    if (icon) {
+        icon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+    }
+}
+
+// Sayfa yüklendiğinde kaydedilmiş temayı uygula
+(function() {
+    var saved = localStorage.getItem('rotagmc_theme');
+    if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        // DOM hazır olunca ikonu güncelle
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                updateThemeIcon('dark');
+            });
+        } else {
+            updateThemeIcon('dark');
+        }
+    }
+})();
