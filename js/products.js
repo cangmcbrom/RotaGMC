@@ -306,13 +306,31 @@ products.forEach(p => {
 // NOT: priceAdjust = ana fiyata eklenen/çıkarılan TL miktarı (0 = fiyat değişmez)
 // NOT: discountPercent = o adetten itibaren uygulanan yüzde indirim
 // NOT: images dizisini boş bırakırsanız ana görsel kullanılır
+//
+// ÖZELLEŞTİRİLMİŞ FİYAT SİSTEMİ:
+// Bir renk veya bedenin kendi fiyat/indirimi olsun istiyorsan:
+//   priceAdjust yerine price ve oldPrice yaz!
+//
+//   ÖRNEK - Renkte özel fiyat:
+//   colors: [
+//       { name: "Siyah", code: "#000", images: [...], priceAdjust: 0 },          ← ana fiyat kullanılır
+//       { name: "Kırmızı", code: "#d00", images: [...], price: 799.99, oldPrice: 999.99 }  ← kendi fiyatı var, %25 indirimli görünür
+//   ]
+//
+//   ÖRNEK - Bedende özel fiyat:
+//   sizes: [
+//       { name: "S", priceAdjust: 0 },                           ← ana fiyat
+//       { name: "XL", price: 899.99, oldPrice: 1099.99 },        ← kendi fiyatı, kendi indirimi
+//       { name: "2XL", price: 949.99, oldPrice: null },           ← kendi fiyatı, indirim yok
+//   ]
 // =============================================
 
 
 products.push({
     id: 17,                          // benzersiz numara (sırayla arttır)
     name: "İstanbul Silüeti Bordo Erkek/Kadın %100 Pamuk T-Shirt – Galata Kulesi & Bosphorus Baskılı RG-TSHIRT-001", // ürün adı
-    category: "giyim",               // "telefon" veya "araba" veya "giyim"
+    category: "giyim",               // "telefon", "araba", "giyim", "ev"
+    subCategory: "erkek-tisort",     // alt kategori
     price: 699.99,                       // indirimli fiyat
     oldPrice: 849.99,                // indirimsizse null yaz
     image: "images/urun17.jpg",      // ana görsel
@@ -334,16 +352,330 @@ products.find(p => p.id === 17).variants = {
     colors: [
         { name: "Siyah", code: "#000000", images: ["images/u17-siyah1.jpg", "images/u17-siyah2.jpg"], priceAdjust: 0 },
         { name: "Beyaz", code: "#ffffff", images: ["images/u17-beyaz1.jpg"], priceAdjust: 0 },
-        { name: "Kırmızı", code: "#d32f2f", images: ["images/u17-kirmizi1.jpg"], priceAdjust: 20 },
-        { name: "Turuncu", code: "#ff9500", images: ["images/u17-turuncu1.jpg"], priceAdjust: 20 }
+        { name: "Kırmızı", code: "#d32f2f", images: ["images/u17-kirmizi1.jpg"], price: 749.99, oldPrice: 949.99 },
+        { name: "Turuncu", code: "#ff9500", images: ["images/u17-turuncu1.jpg"], price: 799.99, oldPrice: 999.99 }
     ],
     sizes: [
         { name: "S", priceAdjust: 0 },
         { name: "M", priceAdjust: 0 },
         { name: "L", priceAdjust: 10 },
         { name: "XL", priceAdjust: 20 },
-        { name: "2XL", priceAdjust: 40 }
+        { name: "2XL", price: 799.99, oldPrice: 999.99 }
     ]
+};
+
+
+// =============================================
+// ÖRNEK ÜRÜNLER - GİYİM ALT KATEGORİLERİ
+// =============================================
+// subCategory değerleri:
+//   Erkek: "erkek-hoodie", "erkek-sweatshirt", "erkek-tisort", "erkek-aksesuar"
+//   Kadın: "kadin-hoodie", "kadin-sweatshirt", "kadin-tisort", "kadin-aksesuar"
+//   Çocuk: "cocuk-hoodie", "cocuk-sweatshirt", "cocuk-tisort"
+//   Çiftler: "cift-hoodie", "cift-tisort", "cift-sweatshirt", "cift-aksesuar"
+// =============================================
+
+products.push(
+    {
+        id: 18,
+        name: "Oversize Erkek Hoodie - Street Style",
+        category: "giyim",
+        subCategory: "erkek-hoodie",
+        price: 899.99,
+        oldPrice: 1199.99,
+        image: "https://placehold.co/400x400/2d2d2d/ffffff?text=Erkek+Hoodie",
+        description: "Oversize kesim, kalın kumaş yapısıyla soğuk havalarda sıcak tutan şık bir hoodie. %100 pamuk iç yüzeyi ile konforlu kullanım.",
+        features: ["Oversize kesim", "Kalın polar astarlı", "Kanguru cep", "Ayarlanabilir kapüşon"],
+        featured: false,
+        badge: "Yeni",
+        stock: 15,
+        rating: 4.7,
+        reviewCount: 45
+    },
+    {
+        id: 19,
+        name: "Erkek Sweatshirt - Minimal Logo",
+        category: "giyim",
+        subCategory: "erkek-sweatshirt",
+        price: 749.99,
+        oldPrice: 999.99,
+        image: "https://placehold.co/400x400/1a1a2e/ffffff?text=Erkek+Sweat",
+        description: "Minimal tasarımlı erkek sweatshirt. Günlük kullanıma uygun, rahat ve şık.",
+        features: ["3 İplik kumaş", "Bisiklet yaka", "Regular fit", "Logo baskı"],
+        featured: false,
+        badge: null,
+        stock: 20,
+        rating: 4.5,
+        reviewCount: 32
+    },
+    {
+        id: 20,
+        name: "Kadın Oversize Hoodie - Pastel",
+        category: "giyim",
+        subCategory: "kadin-hoodie",
+        price: 849.99,
+        oldPrice: 1099.99,
+        image: "https://placehold.co/400x400/e8b4b8/333333?text=Kadin+Hoodie",
+        description: "Pastel tonlarında kadın hoodie. Yumuşak dokulu, oversize kesim ile hem rahat hem şık.",
+        features: ["Oversize kesim", "Yumuşak pamuklu kumaş", "Kanguru cep", "Kapüşonlu"],
+        featured: false,
+        badge: "Popüler",
+        stock: 12,
+        rating: 4.9,
+        reviewCount: 78
+    },
+    {
+        id: 21,
+        name: "Kadın Basic Tişört - V Yaka",
+        category: "giyim",
+        subCategory: "kadin-tisort",
+        price: 449.99,
+        oldPrice: null,
+        image: "https://placehold.co/400x400/f5e6cc/333333?text=Kadin+Tisort",
+        description: "V yaka basic kadın tişört. Günlük kombinlerin vazgeçilmezi.",
+        features: ["%100 Pamuk", "V yaka kesim", "Slim fit", "Kolay ütü"],
+        featured: false,
+        badge: null,
+        stock: 30,
+        rating: 4.4,
+        reviewCount: 56
+    },
+    {
+        id: 22,
+        name: "Kadın Crop Sweatshirt",
+        category: "giyim",
+        subCategory: "kadin-sweatshirt",
+        price: 649.99,
+        oldPrice: 849.99,
+        image: "https://placehold.co/400x400/d4a5a5/ffffff?text=Kadin+Sweat",
+        description: "Crop kesim kadın sweatshirt. Yüksek bel pantolonlarla harika uyum.",
+        features: ["Crop kesim", "3 İplik kumaş", "Bisiklet yaka", "Trend tasarım"],
+        featured: false,
+        badge: "Trend",
+        stock: 18,
+        rating: 4.6,
+        reviewCount: 41
+    },
+    {
+        id: 23,
+        name: "Çocuk Kapüşonlu Sweatshirt",
+        category: "giyim",
+        subCategory: "cocuk-hoodie",
+        price: 549.99,
+        oldPrice: 699.99,
+        image: "https://placehold.co/400x400/87ceeb/333333?text=Cocuk+Hoodie",
+        description: "Renkli ve eğlenceli çocuk hoodie. Yumuşak kumaşıyla çocuklar için ideal.",
+        features: ["Yumuşak pamuk", "Kapüşonlu", "Kanguru cep", "Canlı renkler"],
+        featured: false,
+        badge: null,
+        stock: 25,
+        rating: 4.8,
+        reviewCount: 63
+    },
+    {
+        id: 24,
+        name: "Çocuk Baskılı Tişört - Dinozor",
+        category: "giyim",
+        subCategory: "cocuk-tisort",
+        price: 349.99,
+        oldPrice: null,
+        image: "https://placehold.co/400x400/98d8c8/333333?text=Cocuk+Tisort",
+        description: "Eğlenceli dinozor baskılı çocuk tişört. %100 pamuk, hassas ciltlere uygun.",
+        features: ["%100 Organik pamuk", "Eğlenceli baskı", "Rahat kesim", "Alerjen içermez"],
+        featured: false,
+        badge: null,
+        stock: 35,
+        rating: 4.7,
+        reviewCount: 29
+    }
+);
+
+
+// =============================================
+// ÇİFTLER & HEDİYELİK - ÖRNEK ÜRÜNLER
+// =============================================
+products.push(
+    {
+        id: 29,
+        name: "Couple Hoodie Set - King & Queen",
+        category: "giyim",
+        subCategory: "cift-hoodie",
+        price: 1599.99,
+        oldPrice: 2199.99,
+        image: "https://placehold.co/400x400/2c2c54/ffffff?text=Couple+Hoodie",
+        description: "King & Queen baskılı couple hoodie seti. 2'li set olarak gönderilir. Sevgilinizle uyumlu kombinin adresi! %100 pamuk, oversize kesim.",
+        features: ["2'li set (King + Queen)", "Oversize kesim", "%100 Pamuk", "Özel baskı tasarım"],
+        featured: true,
+        badge: "Çok Satan",
+        stock: 10,
+        rating: 4.9,
+        reviewCount: 156
+    },
+    {
+        id: 30,
+        name: "Couple Tişört Set - Minimal Kalp",
+        category: "giyim",
+        subCategory: "cift-tisort",
+        price: 899.99,
+        oldPrice: 1299.99,
+        image: "https://placehold.co/400x400/e8b4b8/333333?text=Couple+Tisort",
+        description: "Minimal kalp tasarımlı couple tişört seti. 2'li set. Yaz aylarının vazgeçilmez çift kombini.",
+        features: ["2'li set", "Slim fit kesim", "%100 Pamuk", "Kalp baskı tasarım"],
+        featured: false,
+        badge: "Yeni",
+        stock: 20,
+        rating: 4.7,
+        reviewCount: 89
+    }
+);
+
+
+// =============================================
+// EV & YAŞAM KATEGORİSİ - ÖRNEK ÜRÜNLER
+// =============================================
+products.push(
+    {
+        id: 25,
+        name: "El Yapımı Seramik Kupa Bardak",
+        category: "ev",
+        subCategory: "kupa",
+        price: 249.99,
+        oldPrice: 349.99,
+        image: "https://placehold.co/400x400/d4a574/ffffff?text=Kupa+Bardak",
+        description: "El yapımı seramik kupa bardak. Minimalist tasarımı ile kahve ve çay keyfinize eşlik eder. Bulaşık makinesinde yıkanabilir.",
+        features: ["El yapımı seramik", "350ml kapasite", "Bulaşık makinesine uygun", "Minimalist tasarım"],
+        featured: true,
+        badge: "Yeni",
+        stock: 40,
+        rating: 4.9,
+        reviewCount: 84
+    },
+    {
+        id: 26,
+        name: "Dekoratif Kırlent Yastık - Boho",
+        category: "ev",
+        subCategory: "yastik",
+        price: 399.99,
+        oldPrice: 549.99,
+        image: "https://placehold.co/400x400/c4a882/ffffff?text=Kirlent",
+        description: "Boho tarzı dekoratif kırlent yastık. 45x45 cm ebatlarında, iç dolgusu dahil. Koltuğunuza ve yatağınıza şıklık katın.",
+        features: ["45x45 cm", "İç dolgu dahil", "Fermuar kapaklı", "Yıkanabilir kılıf"],
+        featured: false,
+        badge: "Popüler",
+        stock: 22,
+        rating: 4.6,
+        reviewCount: 38
+    },
+    {
+        id: 27,
+        name: "Bambu Masa Düzenleyici",
+        category: "ev",
+        subCategory: "dekorasyon",
+        price: 599.99,
+        oldPrice: 799.99,
+        image: "https://placehold.co/400x400/8fbc8f/ffffff?text=Masa+Duzenleyici",
+        description: "Doğal bambudan üretilmiş masa düzenleyici. Kalem, telefon, not defteri gibi masaüstü eşyalarınızı düzenli tutun.",
+        features: ["Doğal bambu", "Çok bölmeli", "Telefon standı", "Kompakt tasarım"],
+        featured: false,
+        badge: null,
+        stock: 15,
+        rating: 4.5,
+        reviewCount: 21
+    },
+    {
+        id: 28,
+        name: "Kokulu Mum Seti - 3'lü Paket",
+        category: "ev",
+        subCategory: "dekorasyon",
+        price: 349.99,
+        oldPrice: 449.99,
+        image: "https://placehold.co/400x400/e8d5b7/333333?text=Kokulu+Mum",
+        description: "3 farklı koku seçeneğiyle kokulu mum seti. Vanilya, lavanta ve okyanus esintisi. Soya mumu bazlı, doğal.",
+        features: ["Soya mumu bazlı", "3 farklı koku", "40 saat yanma süresi", "Cam kavanozda"],
+        featured: false,
+        badge: null,
+        stock: 30,
+        rating: 4.8,
+        reviewCount: 52
+    }
+);
+
+
+// =============================================
+// KATEGORİ VE ALT KATEGORİ TANIMLARI
+// =============================================
+// Bu yapı navigasyon ve filtreleme için kullanılır.
+// Ürün yoksa otomatik gizlenir.
+// =============================================
+const categoryConfig = {
+    telefon: {
+        name: "Telefon Aksesuarları",
+        icon: "smartphone",
+        desc: "Kılıf, şarj, kablo ve daha fazlası",
+        image: "images/cat-telefon.png",
+        subCategories: null  // alt kategorisi yok
+    },
+    araba: {
+        name: "Araba Aksesuarları",
+        icon: "directions_car",
+        desc: "Tutucu, koku, organizer ve daha fazlası",
+        image: "images/cat-araba.png",
+        subCategories: null
+    },
+    giyim: {
+        name: "Giyim",
+        icon: "checkroom",
+        desc: "Hoodie, sweatshirt, tişört ve daha fazlası",
+        image: "images/cat-giyim.png",
+        subCategories: {
+            "erkek": {
+                name: "Erkek Giyim",
+                subs: {
+                    "erkek-hoodie": "Hoodie",
+                    "erkek-sweatshirt": "Sweatshirt",
+                    "erkek-tisort": "Tişört",
+                    "erkek-aksesuar": "Aksesuar"
+                }
+            },
+            "kadin": {
+                name: "Kadın Giyim",
+                subs: {
+                    "kadin-hoodie": "Hoodie",
+                    "kadin-sweatshirt": "Sweatshirt",
+                    "kadin-tisort": "Tişört",
+                    "kadin-aksesuar": "Aksesuar"
+                }
+            },
+            "cocuk": {
+                name: "Çocuk Giyim",
+                subs: {
+                    "cocuk-hoodie": "Hoodie",
+                    "cocuk-sweatshirt": "Sweatshirt",
+                    "cocuk-tisort": "Tişört"
+                }
+            },
+            "cift": {
+                name: "Çiftler & Hediyelik",
+                subs: {
+                    "cift-hoodie": "Couple Hoodie",
+                    "cift-tisort": "Couple Tişört",
+                    "cift-sweatshirt": "Couple Sweatshirt",
+                    "cift-aksesuar": "Hediyelik Aksesuar"
+                }
+            }
+        }
+    },
+    ev: {
+        name: "Ev & Yaşam",
+        icon: "home",
+        desc: "Kupa, yastık, dekorasyon ve daha fazlası",
+        image: "images/cat-ev.png",
+        subCategories: {
+            "kupa": { name: "Kupa Bardak", subs: null },
+            "yastik": { name: "Yastık & Kırlent", subs: null },
+            "dekorasyon": { name: "Dekorasyon", subs: null }
+        }
+    }
 };
 
 

@@ -71,6 +71,7 @@
                 <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'telefon')">Telefon Aksesuarları</a>
                 <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'araba')">Araba Aksesuarları</a>
                 <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'giyim')">Giyim</a>
+                <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'ev')">Ev & Yaşam</a>
                 <a href="javascript:void(0)" class="nav-link" onclick="navigate('category', 'tumu')">Tüm Ürünler</a>
             </div>
         </nav>
@@ -89,6 +90,7 @@
             <a href="javascript:void(0)" onclick="navigate('category', 'telefon'); closeMobileMenu()">Telefon Aksesuarları</a>
             <a href="javascript:void(0)" onclick="navigate('category', 'araba'); closeMobileMenu()">Araba Aksesuarları</a>
             <a href="javascript:void(0)" onclick="navigate('category', 'giyim'); closeMobileMenu()">Giyim</a>
+            <a href="javascript:void(0)" onclick="navigate('category', 'ev'); closeMobileMenu()">Ev & Yaşam</a>
             <a href="javascript:void(0)" onclick="navigate('category', 'tumu'); closeMobileMenu()">Tüm Ürünler</a>
             <a href="javascript:void(0)" onclick="navigate('cart'); closeMobileMenu()">Sepetim</a>
         </div>
@@ -116,34 +118,8 @@
                     <h2>Kategoriler</h2>
                     <div class="section-line"></div>
                 </div>
-                <div class="category-cards">
-                    <div class="category-card" onclick="navigate('category', 'telefon')">
-                        <img src="images/cat-telefon.png" alt="Telefon" class="category-card-img">
-                        <div class="category-card-content">
-                            <h3>Telefon Aksesuarları</h3>
-                            <span class="cat-count" id="catCountTelefon">0 ürün</span>
-                            <p>Kılıf, şarj, kablo ve daha fazlası</p>
-                        </div>
-                        <span class="material-icons-outlined cat-arrow">chevron_right</span>
-                    </div>
-                    <div class="category-card" onclick="navigate('category', 'araba')">
-                        <img src="images/cat-araba.png" alt="Araba" class="category-card-img">
-                        <div class="category-card-content">
-                            <h3>Araba Aksesuarları</h3>
-                            <span class="cat-count" id="catCountAraba">0 ürün</span>
-                            <p>Tutucu, koku, organizer ve daha fazlası</p>
-                        </div>
-                        <span class="material-icons-outlined cat-arrow">chevron_right</span>
-                    </div>
-                    <div class="category-card" onclick="navigate('category', 'giyim')">
-                        <img src="images/cat-giyim.png" alt="Giyim" class="category-card-img">
-                        <div class="category-card-content">
-                            <h3>Giyim</h3>
-                            <span class="cat-count" id="catCountGiyim">0 ürün</span>
-                            <p>Tişört, sweatshirt, pantolon ve daha fazlası</p>
-                        </div>
-                        <span class="material-icons-outlined cat-arrow">chevron_right</span>
-                    </div>
+                <div class="category-cards" id="dynamicCategoryCards">
+                    <!-- JS tarafından otomatik doldurulacak -->
                 </div>
 
                 <!-- ÖNE ÇIKAN ÜRÜNLER -->
@@ -472,6 +448,7 @@
                     <a href="javascript:void(0)" onclick="navigate('category', 'telefon')">Telefon Aksesuarları</a>
                     <a href="javascript:void(0)" onclick="navigate('category', 'araba')">Araba Aksesuarları</a>
                     <a href="javascript:void(0)" onclick="navigate('category', 'giyim')">Giyim</a>
+                    <a href="javascript:void(0)" onclick="navigate('category', 'ev')">Ev & Yaşam</a>
                 </div>
                 <div class="footer-col">
                     <h4>Bilgi</h4>

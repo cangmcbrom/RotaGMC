@@ -217,7 +217,7 @@ function updateSlider() {
 // ===== ÜRÜN KARTLARI =====
 function createProductCard(product) {
     const isOutOfStock = product.stock !== undefined && product.stock <= 0;
-    const catLabel = product.category === 'telefon' ? 'Telefon Aksesuarı' : product.category === 'araba' ? 'Araba Aksesuarı' : product.category === 'giyim' ? 'Giyim' : 'Ürün';
+    const catLabel = (typeof categoryConfig !== 'undefined' && categoryConfig[product.category]) ? categoryConfig[product.category].name : 'Ürün';
 
     let actionsHTML = '';
     if (isOutOfStock) {
@@ -283,24 +283,142 @@ function loadNewProducts() {
 }
 
 // ===== KATEGORİ SAYFASI =====
+let currentSubCategory = '';
+
 function loadCategoryProducts(category) {
     currentCategory = category;
+    currentSubCategory = '';
 
     const titleEl = document.getElementById('categoryTitle');
     const breadcrumb = document.getElementById('breadcrumb');
+    const config = typeof categoryConfig !== 'undefined' ? categoryConfig[category] : null;
 
-    if (category === 'telefon') {
-        titleEl.textContent = 'Telefon Aksesuarları';
-        breadcrumb.innerHTML = `<a href="#" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Telefon Aksesuarları</span>`;
-    } else if (category === 'araba') {
-        titleEl.textContent = 'Araba Aksesuarları';
-        breadcrumb.innerHTML = `<a href="#" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Araba Aksesuarları</span>`;
-    } else if (category === 'giyim') {
-        titleEl.textContent = 'Giyim';
-        breadcrumb.innerHTML = `<a href="#" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Giyim</span>`;
-    } else {
+    if (config) {
+        titleEl.textContent = config.name;
+        breadcrumb.innerHTML = '<a href="#" onclick="navigate(\'home\')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">' + config.name + '</span>';
+    } else if (category === 'tumu') {
         titleEl.textContent = 'Tüm Ürünler';
-        breadcrumb.innerHTML = `<a href="#" onclick="navigate('home')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Tüm Ürünler</span>`;
+        breadcrumb.innerHTML = '<a href="#" onclick="navigate(\'home\')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">Tüm Ürünler</span>';
+    } else {
+        titleEl.textContent = category;
+        breadcrumb.innerHTML = '<a href="#" onclick="navigate(\'home\')">Ana Sayfa</a> <span class="separator">/</span> <span class="current">' + category + '</span>';
+    }
+
+    // Alt kategori sekmelerini oluştur
+    renderSubCategoryTabs(category);
+
+    applySorting();
+}
+
+function renderSubCategoryTabs(category) {
+    var container = document.getElementById('subCategoryTabs');
+    if (!container) {
+        // Alt kategori container'ı yoksa oluştur
+        var catPage = document.getElementById('categoryPage');
+        var sortBar = catPage.querySelector('.sort-bar') || catPage.querySelector('.products-grid');
+        var tabsDiv = document.createElement('div');
+        tabsDiv.id = 'subCategoryTabs';
+        tabsDiv.className = 'sub-category-tabs';
+        sortBar.parentElement.insertBefore(tabsDiv, sortBar);
+        container = tabsDiv;
+    }
+
+    var config = typeof categoryConfig !== 'undefined' ? categoryConfig[category] : null;
+    if (!config || !config.subCategories) {
+        container.innerHTML = '';
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = '';
+    var html = '<button class="sub-tab active" onclick="filterSubCategory(\'\', this)">Tümü</button>';
+
+    // Üst alt kategoriler (erkek, kadın, çocuk VEYA kupa, yastık vb.)
+    var subs = config.subCategories;
+    Object.keys(subs).forEach(function(key) {
+        var sub = subs[key];
+        // Bu alt kategoride ürün var mı kontrol et
+        var hasProducts = false;
+
+        if (sub.subs) {
+            // 2 seviyeli (giyim → erkek → hoodie)
+            Object.keys(sub.subs).forEach(function(subKey) {
+                if (products.some(function(p) { return p.category === category && p.subCategory === subKey; })) {
+                    hasProducts = true;
+                }
+            });
+        } else {
+            // 1 seviyeli (ev → kupa)
+            hasProducts = products.some(function(p) { return p.category === category && p.subCategory === key; });
+        }
+
+        if (!hasProducts) return; // ürün yoksa gösterme
+
+        if (sub.subs) {
+            // Dropdown menü oluştur (erkek giyim → hoodie, sweatshirt vb.)
+            html += '<div class="sub-tab-group">';
+            html += '<button class="sub-tab" onclick="filterSubGroup(\'' + key + '\', this)">' + sub.name + '</button>';
+            html += '<div class="sub-tab-dropdown" id="subDrop_' + key + '">';
+
+            Object.keys(sub.subs).forEach(function(subKey) {
+                var subName = sub.subs[subKey];
+                var count = products.filter(function(p) { return p.category === category && p.subCategory === subKey; }).length;
+                if (count > 0) {
+                    html += '<button class="sub-tab-item" onclick="filterSubCategory(\'' + subKey + '\', this)">' + subName + ' <span class="sub-count">(' + count + ')</span></button>';
+                }
+            });
+
+            html += '</div></div>';
+        } else {
+            // Direkt buton (kupa, yastık vb.)
+            var count = products.filter(function(p) { return p.category === category && p.subCategory === key; }).length;
+            html += '<button class="sub-tab" onclick="filterSubCategory(\'' + key + '\', this)">' + sub.name + ' <span class="sub-count">(' + count + ')</span></button>';
+        }
+    });
+
+    container.innerHTML = html;
+}
+
+function filterSubCategory(subCat, btn) {
+    currentSubCategory = subCat;
+
+    // Aktif sekmeyi güncelle
+    var container = document.getElementById('subCategoryTabs');
+    if (container) {
+        container.querySelectorAll('.sub-tab, .sub-tab-item').forEach(function(t) { t.classList.remove('active'); });
+        if (btn) btn.classList.add('active');
+
+        // Eğer "Tümü" seçildiyse grup butonlarını da deaktif et
+        if (!subCat) {
+            container.querySelector('.sub-tab').classList.add('active');
+        }
+    }
+
+    // Dropdown'ları kapat
+    document.querySelectorAll('.sub-tab-dropdown').forEach(function(d) { d.classList.remove('open'); });
+
+    applySorting();
+}
+
+function filterSubGroup(groupKey, btn) {
+    // Grup butonuna tıklandığında dropdown göster/gizle
+    var dropdown = document.getElementById('subDrop_' + groupKey);
+    var isOpen = dropdown.classList.contains('open');
+
+    // Tüm dropdown'ları kapat
+    document.querySelectorAll('.sub-tab-dropdown').forEach(function(d) { d.classList.remove('open'); });
+
+    if (!isOpen) {
+        dropdown.classList.add('open');
+    }
+
+    // Grubun tüm ürünlerini göster
+    currentSubCategory = 'group_' + groupKey;
+
+    var container = document.getElementById('subCategoryTabs');
+    if (container) {
+        container.querySelectorAll('.sub-tab, .sub-tab-item').forEach(function(t) { t.classList.remove('active'); });
+        btn.classList.add('active');
     }
 
     applySorting();
@@ -313,7 +431,19 @@ function applySorting() {
     if (currentCategory === 'tumu' || !currentCategory) {
         filtered = [...products];
     } else {
-        filtered = products.filter(p => p.category === currentCategory);
+        filtered = products.filter(function(p) { return p.category === currentCategory; });
+
+        // Alt kategori filtresi
+        if (currentSubCategory) {
+            if (currentSubCategory.startsWith('group_')) {
+                // Grup filtresi (örn: "group_erkek" → erkek-hoodie, erkek-sweatshirt vb.)
+                var groupPrefix = currentSubCategory.replace('group_', '') + '-';
+                filtered = filtered.filter(function(p) { return p.subCategory && p.subCategory.startsWith(groupPrefix); });
+            } else {
+                // Direkt alt kategori filtresi
+                filtered = filtered.filter(function(p) { return p.subCategory === currentSubCategory; });
+            }
+        }
     }
 
     switch (sortValue) {
@@ -350,7 +480,7 @@ function loadProductDetail(productId) {
     gallerySlide = 0;
 
     const breadcrumb = document.getElementById('productBreadcrumb');
-    const catName = product.category === 'telefon' ? 'Telefon Aksesuarları' : product.category === 'araba' ? 'Araba Aksesuarları' : product.category === 'giyim' ? 'Giyim' : 'Ürünler';
+    const catName = (typeof categoryConfig !== 'undefined' && categoryConfig[product.category]) ? categoryConfig[product.category].name : 'Ürünler';
     breadcrumb.innerHTML = `
         <a href="javascript:void(0)" onclick="navigate('home')">Ana Sayfa</a>
         <span class="separator">/</span>
@@ -462,8 +592,8 @@ function loadProductDetail(productId) {
             </div>` : ''}
             <div class="product-price-section" id="productPriceSection">
                 <span class="current-price" id="detailCurrentPrice">${formatPrice(product.price)}</span>
-                ${product.oldPrice ? `<span class="old-price" id="detailOldPrice">${formatPrice(product.oldPrice)}</span>` : ''}
-                ${discount > 0 ? `<span class="product-badge" style="position:static">%${discount} İndirim</span>` : ''}
+                ${product.oldPrice ? `<span class="old-price" id="detailOldPrice">${formatPrice(product.oldPrice)}</span>` : `<span class="old-price" id="detailOldPrice" style="display:none"></span>`}
+                ${discount > 0 ? `<span class="product-badge" id="detailDiscountBadge" style="position:static">%${discount} İndirim</span>` : `<span class="product-badge" id="detailDiscountBadge" style="position:static;display:none"></span>`}
             </div>
             ${product.stock !== undefined && product.stock <= 0 ? `
             <p style="color:var(--accent);font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;background:#fff3f3;padding:10px 14px;border-radius:8px;border:1px solid #ffcdd2;">
@@ -1263,19 +1393,54 @@ function inlineQtyChange(productId, delta) {
 }
 
 
-// ===== KATEGORİ ÜRÜN SAYILARI =====
+// ===== KATEGORİ ÜRÜN SAYILARI & DİNAMİK KARTLAR =====
 function updateCategoryCounts() {
-    const telefonCount = products.filter(p => p.category === 'telefon').length;
-    const arabaCount = products.filter(p => p.category === 'araba').length;
-    const giyimCount = products.filter(p => p.category === 'giyim').length;
+    renderDynamicCategoryCards();
+}
 
-    const telEl = document.getElementById('catCountTelefon');
-    const arabaEl = document.getElementById('catCountAraba');
-    const giyimEl = document.getElementById('catCountGiyim');
+function renderDynamicCategoryCards() {
+    var container = document.getElementById('dynamicCategoryCards');
+    if (!container || typeof categoryConfig === 'undefined') {
+        // Fallback: eski statik kartları güncelle
+        var telefonCount = products.filter(function(p) { return p.category === 'telefon'; }).length;
+        var arabaCount = products.filter(function(p) { return p.category === 'araba'; }).length;
+        var giyimCount = products.filter(function(p) { return p.category === 'giyim'; }).length;
+        var evCount = products.filter(function(p) { return p.category === 'ev'; }).length;
 
-    if (telEl) telEl.textContent = `${telefonCount} ürün`;
-    if (arabaEl) arabaEl.textContent = `${arabaCount} ürün`;
-    if (giyimEl) giyimEl.textContent = `${giyimCount} ürün`;
+        var telEl = document.getElementById('catCountTelefon');
+        var arabaEl = document.getElementById('catCountAraba');
+        var giyimEl = document.getElementById('catCountGiyim');
+        var evEl = document.getElementById('catCountEv');
+
+        if (telEl) telEl.textContent = telefonCount + ' ürün';
+        if (arabaEl) arabaEl.textContent = arabaCount + ' ürün';
+        if (giyimEl) giyimEl.textContent = giyimCount + ' ürün';
+        if (evEl) evEl.textContent = evCount + ' ürün';
+        return;
+    }
+
+    var html = '';
+    var categories = Object.keys(categoryConfig);
+
+    categories.forEach(function(catKey) {
+        var config = categoryConfig[catKey];
+        var count = products.filter(function(p) { return p.category === catKey; }).length;
+
+        // Ürün yoksa bu kategoriyi gösterme
+        if (count === 0) return;
+
+        html += '<div class="category-card" onclick="navigate(\'category\', \'' + catKey + '\')">' +
+            '<img src="' + config.image + '" alt="' + config.name + '" class="category-card-img" onerror="this.style.display=\'none\'">' +
+            '<div class="category-card-content">' +
+                '<h3>' + config.name + '</h3>' +
+                '<span class="cat-count">' + count + ' ürün</span>' +
+                '<p>' + config.desc + '</p>' +
+            '</div>' +
+            '<span class="material-icons-outlined cat-arrow">chevron_right</span>' +
+        '</div>';
+    });
+
+    container.innerHTML = html;
 }
 
 
@@ -1338,6 +1503,7 @@ function showQuickActions(type) {
             ['📱 Telefon Aksesuarları', 'telefon'],
             ['🚗 Araba Aksesuarları', 'araba'],
             ['👕 Giyim', 'giyim'],
+            ['🏠 Ev & Yaşam', 'ev'],
             ['🔒 Gizlilik Politikası', 'gizlilik'],
             ['📞 İletişim', 'iletisim'],
             ['❓ Sıkça Sorulan Sorular', 'sss']
@@ -1415,7 +1581,11 @@ function handleQuickAction(action) {
             next: 'back'
         },
         giyim: {
-            msg: '👕 <strong>Giyim</strong> kategorimize göz atın!<br><br>Tişört, sweatshirt, pantolon ve daha fazlası...<br><br>👉 <span class="chat-link" onclick="navigate(\'category\',\'giyim\');toggleChat()">Giyim Ürünlerine Göz At</span>',
+            msg: '👕 <strong>Giyim</strong> kategorimize göz atın!<br><br>Erkek, kadın ve çocuk giyim seçenekleri: Hoodie, sweatshirt, tişört ve daha fazlası...<br><br>👉 <span class="chat-link" onclick="navigate(\'category\',\'giyim\');toggleChat()">Giyim Ürünlerine Göz At</span>',
+            next: 'back'
+        },
+        ev: {
+            msg: '🏠 <strong>Ev & Yaşam</strong> kategorimizi keşfedin!<br><br>Kupa bardak, dekoratif yastık, kokulu mum, masa düzenleyici ve daha fazlası...<br><br>👉 <span class="chat-link" onclick="navigate(\'category\',\'ev\');toggleChat()">Ev & Yaşam Ürünlerine Göz At</span>',
             next: 'back'
         },
         gizlilik: {
@@ -1491,8 +1661,10 @@ function sendChatMessage() {
         action = 'telefon';
     } else if (/araba|araç|oto|direksiyon|tutucu/.test(lower)) {
         action = 'araba';
-    } else if (/giyim|tişört|sweatshirt|pantolon|kıyafet|elbise/.test(lower)) {
+    } else if (/giyim|tişört|sweatshirt|pantolon|kıyafet|elbise|hoodie/.test(lower)) {
         action = 'giyim';
+    } else if (/ev.*yaşam|kupa|bardak|yastık|kırlent|dekorasyon|mum|ev\b/.test(lower)) {
+        action = 'ev';
     } else if (/gizlilik|güven|güvenilir|veri|kişisel/.test(lower)) {
         action = 'gizlilik';
     } else if (/iletişim|numara|telefon.*no|ulaş|whatsapp|mail|email/.test(lower)) {
@@ -1587,17 +1759,38 @@ function selectSize(productId, sizeIndex) {
 
 function updateVariantPrice(product) {
     let price = product.price;
+    let oldPrice = product.oldPrice || null;
+    let customPrice = false;
 
-    // Renk fark
-    if (product.variants && product.variants.colors) {
-        const ci = window._currentVariant.colorIndex || 0;
-        price += product.variants.colors[ci].priceAdjust || 0;
+    const ci = (window._currentVariant && window._currentVariant.colorIndex) || 0;
+    const si = (window._currentVariant && window._currentVariant.sizeIndex) || 0;
+
+    // Renk bazlı fiyat kontrolü
+    if (product.variants && product.variants.colors && product.variants.colors[ci]) {
+        var color = product.variants.colors[ci];
+        if (color.price !== undefined) {
+            // Rengin kendi fiyatı var → tamamen onu kullan
+            price = color.price;
+            oldPrice = color.oldPrice || null;
+            customPrice = true;
+        } else {
+            price += color.priceAdjust || 0;
+        }
     }
-    // Beden fark
-    if (product.variants && product.variants.sizes) {
-        const si = window._currentVariant.sizeIndex || 0;
-        price += product.variants.sizes[si].priceAdjust || 0;
+
+    // Beden bazlı fiyat kontrolü
+    if (product.variants && product.variants.sizes && product.variants.sizes[si]) {
+        var size = product.variants.sizes[si];
+        if (size.price !== undefined) {
+            // Bedenin kendi fiyatı var → tamamen onu kullan
+            price = size.price;
+            oldPrice = size.oldPrice || null;
+            customPrice = true;
+        } else {
+            price += size.priceAdjust || 0;
+        }
     }
+
     // Toptan indirim
     if (product.bulkPricing) {
         let discount = 0;
@@ -1613,8 +1806,32 @@ function updateVariantPrice(product) {
         });
     }
 
+    // Fiyat göster
     const priceEl = document.getElementById('detailCurrentPrice');
     if (priceEl) priceEl.textContent = formatPrice(price);
+
+    // Eski fiyat ve indirim badge güncelle
+    const oldPriceEl = document.getElementById('detailOldPrice');
+    if (oldPriceEl) {
+        if (oldPrice && oldPrice > price) {
+            oldPriceEl.textContent = formatPrice(oldPrice);
+            oldPriceEl.style.display = '';
+        } else {
+            oldPriceEl.style.display = 'none';
+        }
+    }
+
+    // İndirim badge güncelle
+    var badgeEl = document.getElementById('detailDiscountBadge');
+    if (badgeEl) {
+        if (oldPrice && oldPrice > price) {
+            var disc = Math.round((1 - price / oldPrice) * 100);
+            badgeEl.textContent = '%' + disc + ' İndirim';
+            badgeEl.style.display = '';
+        } else {
+            badgeEl.style.display = 'none';
+        }
+    }
 }
 
 // changeQuantity'de toptan fiyat güncelle
@@ -1849,7 +2066,7 @@ function validateCoupon(code) {
     if (!hasEligibleItem) {
         var scopeText = 'Bu kupon sepetinizdeki ürünlerde geçerli değil.';
         if (coupon.scope === 'category') {
-            var catNames = { telefon: 'Telefon Aksesuarları', araba: 'Araba Aksesuarları', giyim: 'Giyim' };
+            var catNames = { telefon: 'Telefon Aksesuarları', araba: 'Araba Aksesuarları', giyim: 'Giyim', ev: 'Ev & Yaşam' };
             scopeText = 'Bu kupon sadece ' + (catNames[coupon.scopeTarget] || coupon.scopeTarget) + ' kategorisinde geçerlidir.';
         } else if (coupon.scope === 'product') {
             var targetProduct = products.find(function(p) { return p.id === coupon.scopeTarget; });
@@ -2049,3 +2266,13 @@ function showAllReviews(btn) {
     });
     btn.style.display = 'none';
 }
+
+
+// Alt kategori dropdown dışına tıklayınca kapat
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.sub-tab-group')) {
+        document.querySelectorAll('.sub-tab-dropdown').forEach(function(d) {
+            d.classList.remove('open');
+        });
+    }
+});

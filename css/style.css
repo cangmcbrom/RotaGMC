@@ -3102,3 +3102,133 @@ body {
         font-size: 22px;
     }
 }
+
+
+/* ===== ALT KATEGORİ SEKMELERİ ===== */
+.sub-category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 0;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--gray-200);
+    align-items: flex-start;
+}
+
+.sub-tab {
+    padding: 8px 18px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    background: var(--white);
+    color: var(--gray-700);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.sub-tab:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: #fff5f7;
+}
+
+.sub-tab.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.sub-tab .sub-count {
+    font-size: 11px;
+    opacity: 0.7;
+    font-weight: 400;
+}
+
+.sub-tab.active .sub-count {
+    opacity: 0.85;
+}
+
+/* Alt kategori grup (dropdown) */
+.sub-tab-group {
+    position: relative;
+}
+
+.sub-tab-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    min-width: 180px;
+    padding: 6px;
+    animation: fadeInDown 0.2s ease;
+}
+
+.sub-tab-dropdown.open {
+    display: block;
+}
+
+.sub-tab-item {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+}
+
+.sub-tab-item:hover {
+    background: var(--gray-50);
+    color: var(--accent);
+}
+
+.sub-tab-item.active {
+    background: #fff5f7;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.sub-tab-item .sub-count {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-left: 4px;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .sub-category-tabs {
+        gap: 6px;
+        padding: 12px 0;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sub-tab {
+        padding: 7px 14px;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+}
