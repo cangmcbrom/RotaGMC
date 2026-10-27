@@ -2019,6 +2019,38 @@ select, input, textarea {
 
 @media (max-width: 480px) {
     .logo {
+        font-size: 18px;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        line-height: 1;
+    }
+
+    .logo-img {
+        height: 32px;
+    }
+
+    .header-actions {
+        gap: 2px;
+    }
+
+    .theme-toggle-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    .theme-toggle-btn .material-icons-outlined {
+        font-size: 18px;
+    }
+
+    .mobile-search-btn,
+    .cart-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    .mobile-search-btn .material-icons-outlined,
+    .cart-btn .material-icons-outlined {
         font-size: 22px;
     }
 
