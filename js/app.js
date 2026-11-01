@@ -343,13 +343,13 @@ function renderSubCategoryTabs(category) {
         if (sub.subs) {
             // 2 seviyeli (giyim → erkek → hoodie)
             Object.keys(sub.subs).forEach(function(subKey) {
-                if (products.some(function(p) { return p.category === category && p.subCategory === subKey; })) {
+                if (products.some(function(p) { return p.category === category && (Array.isArray(p.subCategory) ? p.subCategory.includes(subKey) : p.subCategory === subKey); })) {
                     hasProducts = true;
                 }
             });
         } else {
             // 1 seviyeli (ev → kupa)
-            hasProducts = products.some(function(p) { return p.category === category && p.subCategory === key; });
+            hasProducts = products.some(function(p) { return p.category === category && (Array.isArray(p.subCategory) ? p.subCategory.includes(key) : p.subCategory === key); });
         }
 
         if (!hasProducts) return; // ürün yoksa gösterme
@@ -362,7 +362,7 @@ function renderSubCategoryTabs(category) {
 
             Object.keys(sub.subs).forEach(function(subKey) {
                 var subName = sub.subs[subKey];
-                var count = products.filter(function(p) { return p.category === category && p.subCategory === subKey; }).length;
+                var count = products.filter(function(p) { return p.category === category && (Array.isArray(p.subCategory) ? p.subCategory.includes(subKey) : p.subCategory === subKey); }).length;
                 if (count > 0) {
                     html += '<button class="sub-tab-item" onclick="filterSubCategory(\'' + subKey + '\', this)">' + subName + ' <span class="sub-count">(' + count + ')</span></button>';
                 }
@@ -371,7 +371,7 @@ function renderSubCategoryTabs(category) {
             html += '</div></div>';
         } else {
             // Direkt buton (kupa, yastık vb.)
-            var count = products.filter(function(p) { return p.category === category && p.subCategory === key; }).length;
+            var count = products.filter(function(p) { return p.category === category && (Array.isArray(p.subCategory) ? p.subCategory.includes(key) : p.subCategory === key); }).length;
             html += '<button class="sub-tab" onclick="filterSubCategory(\'' + key + '\', this)">' + sub.name + ' <span class="sub-count">(' + count + ')</span></button>';
         }
     });
@@ -438,10 +438,18 @@ function applySorting() {
             if (currentSubCategory.startsWith('group_')) {
                 // Grup filtresi (örn: "group_erkek" → erkek-hoodie, erkek-sweatshirt vb.)
                 var groupPrefix = currentSubCategory.replace('group_', '') + '-';
-                filtered = filtered.filter(function(p) { return p.subCategory && p.subCategory.startsWith(groupPrefix); });
+                filtered = filtered.filter(function(p) {
+                    if (!p.subCategory) return false;
+                    if (Array.isArray(p.subCategory)) return p.subCategory.some(function(sc) { return sc.startsWith(groupPrefix); });
+                    return p.subCategory.startsWith(groupPrefix);
+                });
             } else {
                 // Direkt alt kategori filtresi
-                filtered = filtered.filter(function(p) { return p.subCategory === currentSubCategory; });
+                filtered = filtered.filter(function(p) {
+                    if (!p.subCategory) return false;
+                    if (Array.isArray(p.subCategory)) return p.subCategory.includes(currentSubCategory);
+                    return p.subCategory === currentSubCategory;
+                });
             }
         }
     }
